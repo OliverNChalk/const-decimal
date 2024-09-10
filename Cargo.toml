@@ -1,0 +1,36 @@
+[package]
+name = "const-decimal"
+version = "0.1.0"
+authors = ["Oliver Chalk"]
+edition = "2021"
+readme = "README.md"
+
+[lints.clippy]
+cast_possible_truncation = 'warn'
+cast_possible_wrap = 'warn'
+cast_sign_loss = 'warn'
+# See `clippy.toml`.
+disallowed_methods = 'warn'
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+serde = { version = "1.0.210", features = ["derive"], optional = true }
+
+[build-dependencies]
+
+[profile.release]
+opt-level = 3
+debug = true
+
+[profile.paranoid]
+inherits = "release"
+overflow-checks = true
+debug-assertions = true
+
+[profile.performance]
+inherits = "release"
+lto = "fat"
+codegen-units = 1
+incremental = false
