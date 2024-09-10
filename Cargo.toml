@@ -16,9 +16,11 @@ disallowed_methods = 'warn'
 serde = ["dep:serde"]
 
 [dependencies]
+num-traits = "0.2.19"
 serde = { version = "1.0.210", features = ["derive"], optional = true }
 
-[build-dependencies]
+[dev-dependencies]
+paste = "1.0.15"
 
 [profile.release]
 opt-level = 3
