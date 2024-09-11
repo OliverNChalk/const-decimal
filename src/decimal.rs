@@ -7,7 +7,7 @@ use std::str::FromStr;
 use num_traits::{Bounded, ConstOne, ConstZero, One};
 
 use crate::cheats::PrecisionFactor;
-use crate::mul_div::MulDiv;
+use crate::full_mul_div::FullMulDiv;
 
 pub type Uint64_9 = Decimal<u64, 9>;
 pub type Uint128_18 = Decimal<u128, 18>;
@@ -22,7 +22,7 @@ pub struct Decimal<I, const D: u8>(pub I);
 pub trait Integer<const D: u8>:
     // `const_decimal`
     PrecisionFactor<D>
-    + MulDiv
+    + FullMulDiv
     // `num-traits`
     + ConstZero
     + ConstOne
@@ -38,7 +38,7 @@ pub trait Integer<const D: u8>:
 
 impl<I, const D: u8> Integer<D> for I where
     I: PrecisionFactor<D>
-        + MulDiv
+        + FullMulDiv
         + ConstZero
         + ConstOne
         + One
@@ -114,7 +114,7 @@ where
 
     #[inline]
     fn mul(self, rhs: Self) -> Self::Output {
-        Decimal(I::mul_div(self.0, rhs.0, I::PRECISION_FACTOR))
+        Decimal(I::full_mul_div(self.0, rhs.0, I::PRECISION_FACTOR))
     }
 }
 
@@ -126,7 +126,7 @@ where
 
     #[inline]
     fn div(self, rhs: Self) -> Self::Output {
-        Decimal(I::mul_div(self.0, I::PRECISION_FACTOR, rhs.0))
+        Decimal(I::full_mul_div(self.0, I::PRECISION_FACTOR, rhs.0))
     }
 }
 

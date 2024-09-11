@@ -1,14 +1,14 @@
 use ruint::aliases::U256;
 use ruint::Uint;
 
-pub trait MulDiv {
-    fn mul_div(self, rhs: Self, div: Self) -> Self;
+pub trait FullMulDiv {
+    fn full_mul_div(self, rhs: Self, div: Self) -> Self;
 }
 
 macro_rules! impl_primitive_mul_div {
     ($primary:ty, $intermediate:ty) => {
-        impl MulDiv for $primary {
-            fn mul_div(self, rhs: Self, div: Self) -> Self {
+        impl FullMulDiv for $primary {
+            fn full_mul_div(self, rhs: Self, div: Self) -> Self {
                 ((self as $intermediate * rhs as $intermediate) / div as $intermediate)
                     .try_into()
                     .unwrap()
@@ -26,16 +26,16 @@ impl_primitive_mul_div!(i32, i64);
 impl_primitive_mul_div!(u64, u128);
 impl_primitive_mul_div!(i64, i128);
 
-impl MulDiv for u128 {
-    fn mul_div(self, rhs: Self, div: Self) -> Self {
+impl FullMulDiv for u128 {
+    fn full_mul_div(self, rhs: Self, div: Self) -> Self {
         let out: U256 = Uint::from(self) * Uint::from(rhs) / Uint::from(div);
 
         out.try_into().unwrap()
     }
 }
 
-impl MulDiv for i128 {
-    fn mul_div(self, rhs: Self, div: Self) -> Self {
+impl FullMulDiv for i128 {
+    fn full_mul_div(self, rhs: Self, div: Self) -> Self {
         // Determine the sign of the output.
         let sign = self.signum() * rhs.signum() * div.signum();
 
