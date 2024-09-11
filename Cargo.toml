@@ -6,18 +6,19 @@ edition = "2021"
 readme = "README.md"
 
 [lints.clippy]
-cast_possible_truncation = 'warn'
-cast_possible_wrap = 'warn'
-cast_sign_loss = 'warn'
+cast_possible_truncation = "warn"
+cast_possible_wrap = "warn"
+cast_sign_loss = "warn"
 # See `clippy.toml`.
-disallowed_methods = 'warn'
+disallowed_methods = "warn"
 
 [features]
 serde = ["dep:serde"]
 
 [dependencies]
 num-traits = "0.2.19"
-serde = { version = "1.0.210", features = ["derive"], optional = true }
+ruint = "1.12.3"
+serde = { version = "~1.0", features = ["derive"], optional = true }
 
 [dev-dependencies]
 paste = "1.0.15"
