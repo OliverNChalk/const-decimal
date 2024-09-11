@@ -1,12 +1,13 @@
 use std::cmp::Ordering;
 use std::fmt::Display;
-use std::num::ParseFloatError;
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::num::ParseIntError;
+use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 use std::str::FromStr;
 
-use num_traits::{Bounded, ConstOne, ConstZero, One};
+use num_traits::{Bounded, ConstOne, ConstZero, One, Pow};
+use thiserror::Error;
 
-use crate::cheats::PrecisionFactor;
+use crate::cheats::Cheats;
 use crate::full_mul_div::FullMulDiv;
 
 pub type Uint64_9 = Decimal<u64, 9>;
@@ -21,7 +22,7 @@ pub struct Decimal<I, const D: u8>(pub I);
 
 pub trait Integer<const D: u8>:
     // `const_decimal`
-    PrecisionFactor<D>
+    Cheats<D>
     + FullMulDiv
     // `num-traits`
     + ConstZero
@@ -37,7 +38,7 @@ pub trait Integer<const D: u8>:
 }
 
 impl<I, const D: u8> Integer<D> for I where
-    I: PrecisionFactor<D>
+    I: Cheats<D>
         + FullMulDiv
         + ConstZero
         + ConstOne
@@ -143,22 +144,51 @@ where
 
 impl<I, const D: u8> Display for Decimal<I, D>
 where
-    I: Integer<D>,
+    I: Integer<D> + Div<Output = I> + Rem<Output = I> + Display,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!("Display as a decimal; i.e. [125~2] -> 1.25");
+        let integer = self.0 / I::PRECISION_FACTOR;
+        let fractional = self.0 % I::PRECISION_FACTOR;
+
+        write!(f, "{integer}.{fractional:0>decimals$}", decimals = D as usize)
     }
 }
 
 impl<I, const D: u8> FromStr for Decimal<I, D>
 where
-    I: Integer<D>,
+    I: Integer<D> + FromStr<Err = ParseIntError> + Pow<usize, Output = I>,
 {
-    type Err = ParseFloatError;
+    type Err = ParseDecimalError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!("Parse from a string containing a floating point number; refuse to parse an integer");
+        let (integer, fractional_s) = s
+            .split_once('.')
+            .ok_or(ParseDecimalError::MissingDecimalPoint)?;
+        let integer = I::from_str(integer)?;
+        let integer = integer * I::PRECISION_FACTOR;
+        let fractional = I::from_str(fractional_s)?;
+        let fractional = match fractional_s.len().cmp(&(D as usize)) {
+            Ordering::Equal => fractional,
+            Ordering::Less => {
+                let shortfall = D as usize - fractional_s.len();
+
+                fractional * I::pow(I::TEN, shortfall)
+            }
+            Ordering::Greater => return Err(ParseDecimalError::PrecisionLoss(fractional_s.len())),
+        };
+
+        Ok(Decimal(integer + fractional))
     }
+}
+
+#[derive(Debug, PartialEq, Eq, Error)]
+pub enum ParseDecimalError {
+    #[error("Missing decimal point")]
+    MissingDecimalPoint,
+    #[error("Failed to parse integer; err={0}")]
+    ParseInt(#[from] ParseIntError),
+    #[error("Could not parse without precision loss; decimals={0}")]
+    PrecisionLoss(usize),
 }
 
 #[cfg(test)]
@@ -220,4 +250,22 @@ mod tests {
     test_basic_ops!(Uint128_18);
     test_basic_ops!(Int64_9);
     test_basic_ops!(Int128_18);
+
+    #[test]
+    fn uint64_9_to_string() {
+        assert_eq!(Uint64_9::ONE.to_string(), "1.000000000");
+        assert_eq!(Uint64_9::from_scaled(123, 9).to_string(), "0.000000123");
+        assert_eq!((Uint64_9::ONE + Uint64_9::from_scaled(123, 9)).to_string(), "1.000000123");
+    }
+
+    #[test]
+    fn uint64_9_from_str() {
+        assert_eq!("".parse::<Uint64_9>(), Err(ParseDecimalError::MissingDecimalPoint));
+        assert_eq!("1.0".parse::<Uint64_9>(), Ok(Uint64_9::ONE));
+        assert_eq!("0.1".parse::<Uint64_9>(), Ok(Decimal(10u64.pow(8))));
+        assert_eq!("0.123456789".parse::<Uint64_9>(), Ok(Decimal(123456789)));
+        assert_eq!("0.012345678".parse::<Uint64_9>(), Ok(Decimal(12345678)));
+        assert_eq!("0.000000001".parse::<Uint64_9>(), Ok(Decimal(1)));
+        assert_eq!("0.0000000001".parse::<Uint64_9>(), Err(ParseDecimalError::PrecisionLoss(10)));
+    }
 }

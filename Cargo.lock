@@ -225,6 +225,7 @@ dependencies = [
  "proptest",
  "ruint",
  "serde",
+ "thiserror",
 ]
 
 [[package]]

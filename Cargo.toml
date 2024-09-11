@@ -19,6 +19,7 @@ serde = ["dep:serde"]
 num-traits = "0.2.19"
 ruint = "1.12.3"
 serde = { version = "~1.0", features = ["derive"], optional = true }
+thiserror = "1.0.63"
 
 [dev-dependencies]
 paste = "1.0.15"
