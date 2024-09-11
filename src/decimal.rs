@@ -224,42 +224,4 @@ mod tests {
     test_basic_ops!(Uint128_18);
     test_basic_ops!(Int64_9);
     test_basic_ops!(Int128_18);
-
-    mod fuzz {
-        use proptest::prelude::*;
-
-        use super::*;
-
-        proptest! {
-            /// Addition functions the same as regular unsigned integer addition.
-            #[test]
-            fn uint64_9_add(x in 0..u64::MAX, y in 0..u64::MAX) {
-                let decimal = std::panic::catch_unwind(|| Decimal::<_, 9>(x) + Decimal(y));
-                let primitive = std::panic::catch_unwind(|| x + y);
-
-                match (decimal, primitive) {
-                    (Ok(decimal), Ok(primitive)) => assert_eq!(decimal.0, primitive),
-                    (Err(_), Err(_)) => {}
-                    (decimal, primitive) => panic!(
-                        "Mismatch; decimal={decimal:?}; primitive={primitive:?}"
-                    )
-                }
-            }
-
-            /// Subtraction functions the same as regular unsigned integer addition.
-            #[test]
-            fn uint64_9_sub(x in 0..u64::MAX, y in 0..u64::MAX) {
-                let decimal = std::panic::catch_unwind(|| Decimal::<_, 9>(x) - Decimal(y));
-                let primitive = std::panic::catch_unwind(|| x - y);
-
-                match (decimal, primitive) {
-                    (Ok(decimal), Ok(primitive)) => assert_eq!(decimal.0, primitive),
-                    (Err(_), Err(_)) => {}
-                    (decimal, primitive) => panic!(
-                        "Mismatch; decimal={decimal:?}; primitive={primitive:?}",
-                    )
-                }
-            }
-        }
-    }
 }

@@ -5,21 +5,26 @@ pub trait MulDiv {
     fn mul_div(self, rhs: Self, div: Self) -> Self;
 }
 
-impl MulDiv for u64 {
-    fn mul_div(self, rhs: Self, div: Self) -> Self {
-        ((self as u128 * rhs as u128) / div as u128)
-            .try_into()
-            .unwrap()
-    }
+macro_rules! impl_primitive_mul_div {
+    ($primary:ty, $intermediate:ty) => {
+        impl MulDiv for $primary {
+            fn mul_div(self, rhs: Self, div: Self) -> Self {
+                ((self as $intermediate * rhs as $intermediate) / div as $intermediate)
+                    .try_into()
+                    .unwrap()
+            }
+        }
+    };
 }
 
-impl MulDiv for i64 {
-    fn mul_div(self, rhs: Self, div: Self) -> Self {
-        ((self as i128 * rhs as i128) / div as i128)
-            .try_into()
-            .unwrap()
-    }
-}
+impl_primitive_mul_div!(u8, u16);
+impl_primitive_mul_div!(i8, i16);
+impl_primitive_mul_div!(u16, u32);
+impl_primitive_mul_div!(i16, i32);
+impl_primitive_mul_div!(u32, u64);
+impl_primitive_mul_div!(i32, i64);
+impl_primitive_mul_div!(u64, u128);
+impl_primitive_mul_div!(i64, i128);
 
 impl MulDiv for u128 {
     fn mul_div(self, rhs: Self, div: Self) -> Self {
