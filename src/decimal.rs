@@ -31,8 +31,6 @@ pub trait Integer<const D: u8>:
     // `std`
     + Add<Output = Self>
     + Sub<Output = Self>
-    + Mul<Output = Self>
-    + Div<Output = Self>
     + Clone
     + Copy
 {
@@ -47,8 +45,6 @@ impl<I, const D: u8> Integer<D> for I where
         + Bounded
         + Add<Output = Self>
         + Sub<Output = Self>
-        + Mul<Output = Self>
-        + Div<Output = Self>
         + Clone
         + Copy
 {
