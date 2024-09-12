@@ -37,11 +37,18 @@ where
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();
     let input = (I::arbitrary(), I::arbitrary())
-        .prop_map(|(a, b)| (Decimal::<_, D>(a), Decimal::<_, D>(b)));
+        .prop_map(|(a, b)| (Decimal::<_, D>(a / I::TWO), Decimal::<_, D>(b / I::TWO)));
 
     group.bench_function("decimal/sub", |bencher| {
         bencher.iter_batched(
-            || input.new_tree(&mut runner).unwrap().current(),
+            || {
+                let (a, b) = input.new_tree(&mut runner).unwrap().current();
+
+                match a >= b {
+                    true => (a, b),
+                    false => (b, a),
+                }
+            },
             |(a, b)| black_box(black_box(a) - black_box(b)),
             BatchSize::SmallInput,
         )

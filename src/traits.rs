@@ -1,6 +1,6 @@
 use std::fmt::Display;
 use std::num::ParseIntError;
-use std::ops::Not;
+use std::ops::{Not, Shr};
 use std::str::FromStr;
 
 use num_traits::{
@@ -26,6 +26,7 @@ pub trait Primitive:
     + CheckedRem<Output = Self>
     + Not<Output = Self>
     + Pow<usize, Output = Self>
+    + Shr<u32, Output = Self>
     + Clone
     + Copy
     + PartialEq
@@ -50,6 +51,7 @@ impl<T> Primitive for T where
         + CheckedRem<Output = Self>
         + Not<Output = Self>
         + Pow<usize, Output = Self>
+        + Shr<u32, Output = Self>
         + Clone
         + Copy
         + PartialEq

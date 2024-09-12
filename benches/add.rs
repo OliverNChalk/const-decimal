@@ -37,7 +37,7 @@ where
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();
     let input = (I::arbitrary(), I::arbitrary())
-        .prop_map(|(a, b)| (Decimal::<_, D>(a), Decimal::<_, D>(b)));
+        .prop_map(|(a, b)| (Decimal::<_, D>(a / I::TWO), Decimal::<_, D>(b / I::TWO)));
 
     group.bench_function("decimal/add", |bencher| {
         bencher.iter_batched(

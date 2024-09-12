@@ -36,6 +36,10 @@ where
             Ordering::Equal => Decimal(integer),
         }
     }
+
+    pub fn is_zero(&self) -> bool {
+        self.0 == I::ZERO
+    }
 }
 
 impl<I, const D: u8> Add for Decimal<I, D>
