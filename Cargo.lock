@@ -312,7 +312,6 @@ dependencies = [
  "proptest",
  "ruint",
  "serde",
- "static_assertions",
  "thiserror",
 ]
 
