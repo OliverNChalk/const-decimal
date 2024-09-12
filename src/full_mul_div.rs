@@ -39,10 +39,20 @@ impl FullMulDiv for u128 {
 
 impl FullMulDiv for i128 {
     fn full_mul_div(self, rhs: Self, div: Self) -> Self {
+        // If we can compute the output using only an i128, then we should.
+        if let Some(out) = self
+            .checked_mul(rhs)
+            // NB: Panic early on division by 0.
+            .map(|numer| numer.checked_div(div).unwrap())
+        {
+            return out;
+        }
+
         // Determine the sign of the output.
         let sign = self.signum() * rhs.signum() * div.signum();
 
-        // Get the unsigned u256 representation of the integer.
+        // Get the unsigned u256 representation of the integer (we'll later recover the
+        // signed representation using two's complement).
         let this = U256::from(self.unsigned_abs());
         let rhs = U256::from(rhs.unsigned_abs());
         let div = U256::from(div.unsigned_abs());
