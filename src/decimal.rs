@@ -18,11 +18,13 @@ where
     pub const SCALING_FACTOR: I = I::SCALING_FACTOR;
 
     // TODO: See if we can generate a constant.
+    #[must_use]
     pub fn min() -> Self {
         Decimal(I::min_value())
     }
 
     // TODO: See if we can generate a constant.
+    #[must_use]
     pub fn max() -> Self {
         Decimal(I::max_value())
     }
@@ -44,7 +46,7 @@ where
 
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
-        Decimal(self.0 + rhs.0)
+        Decimal(self.0.checked_add(&rhs.0).unwrap())
     }
 }
 
@@ -56,7 +58,7 @@ where
 
     #[inline]
     fn sub(self, rhs: Self) -> Self::Output {
-        Decimal(self.0 - rhs.0)
+        Decimal(self.0.checked_sub(&rhs.0).unwrap())
     }
 }
 
@@ -91,7 +93,7 @@ where
     type Output = Self;
 
     fn neg(self) -> Self::Output {
-        Decimal(-self.0)
+        Decimal(self.0.checked_neg().unwrap())
     }
 }
 

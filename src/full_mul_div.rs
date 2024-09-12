@@ -2,6 +2,7 @@ use ruint::aliases::U256;
 use ruint::Uint;
 
 pub trait FullMulDiv {
+    /// Implements `a * b / c` full width on `a * b`.
     fn full_mul_div(self, rhs: Self, div: Self) -> Self;
 }
 
@@ -9,12 +10,13 @@ macro_rules! impl_primitive_mul_div {
     ($primary:ty, $intermediate:ty) => {
         impl FullMulDiv for $primary {
             fn full_mul_div(self, rhs: Self, div: Self) -> Self {
-                let numer = self as $intermediate * rhs as $intermediate;
-                let denom = div as $intermediate;
-                let out = numer / denom;
+                let numer = (<$intermediate>::from(self))
+                    .checked_mul(<$intermediate>::from(rhs))
+                    .unwrap();
+                let denom = <$intermediate>::from(div);
+                let out = numer.checked_div(denom).unwrap();
 
-                out.try_into()
-                    .unwrap_or_else(|_| panic!("Cast failed; {out}"))
+                out.try_into().unwrap()
             }
         }
     };
@@ -31,7 +33,11 @@ impl_primitive_mul_div!(i64, i128);
 
 impl FullMulDiv for u128 {
     fn full_mul_div(self, rhs: Self, div: Self) -> Self {
-        let out: U256 = Uint::from(self) * Uint::from(rhs) / Uint::from(div);
+        let out: U256 = Uint::from(self)
+            .checked_mul(Uint::from(rhs))
+            .unwrap()
+            .checked_div(Uint::from(div))
+            .unwrap();
 
         out.try_into().unwrap()
     }
@@ -48,7 +54,11 @@ impl FullMulDiv for i128 {
             return out;
         }
 
-        // Determine the sign of the output.
+        // Determine the sign of the output. Signum returns -1, 0, +1, therefore
+        // overflow is not possible. Additionally, if `self` or `rhs` are zero then we
+        // will have already returned. If `div` is zero then our next checked_div will
+        // catch this (and panic).
+        #[allow(clippy::arithmetic_side_effects)]
         let sign = self.signum() * rhs.signum() * div.signum();
 
         // Get the unsigned u256 representation of the integer (we'll later recover the
@@ -58,7 +68,7 @@ impl FullMulDiv for i128 {
         let div = U256::from(div.unsigned_abs());
 
         // Compute the unsigned output.
-        let unsigned = this * rhs / div;
+        let unsigned = this.checked_mul(rhs).unwrap().checked_div(div).unwrap();
 
         // Convert back to the signed output.
         match sign {

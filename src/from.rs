@@ -5,13 +5,17 @@ use crate::{Decimal, Int128_18, Int64_9, Uint128_18, Uint64_9};
 
 impl From<Uint64_9> for Uint128_18 {
     fn from(value: Uint64_9) -> Self {
-        Decimal((value.0 as u128) * 10u128.pow(9))
+        // We know this multiplication can never overflow.
+        #[allow(clippy::arithmetic_side_effects)]
+        Decimal((u128::from(value.0)) * 10u128.pow(9))
     }
 }
 
 impl From<Int64_9> for Int128_18 {
     fn from(value: Int64_9) -> Self {
-        Decimal((value.0 as i128) * 10i128.pow(9))
+        // We know this multiplication can never overflow.
+        #[allow(clippy::arithmetic_side_effects)]
+        Decimal((i128::from(value.0)) * 10i128.pow(9))
     }
 }
 
