@@ -77,6 +77,7 @@ pub enum ParseDecimalError {
 
 #[cfg(test)]
 mod tests {
+    use expect_test::expect;
     use proptest::prelude::Arbitrary;
     use proptest::test_runner::TestRunner;
 
@@ -93,6 +94,16 @@ mod tests {
     #[test]
     fn uint64_9_from_str() {
         assert_eq!("".parse::<Uint64_9>(), Err(ParseDecimalError::MissingDecimalPoint));
+        expect![[r#"
+            Err(
+                ParseInt(
+                    ParseIntError {
+                        kind: Empty,
+                    },
+                ),
+            )
+        "#]]
+        .assert_debug_eq(&"1.".parse::<Uint64_9>());
         assert_eq!("1.0".parse::<Uint64_9>(), Ok(Uint64_9::ONE));
         assert_eq!("0.1".parse::<Uint64_9>(), Ok(Decimal(10u64.pow(8))));
         assert_eq!("0.123456789".parse::<Uint64_9>(), Ok(Decimal(123456789)));
@@ -114,6 +125,16 @@ mod tests {
     #[test]
     fn int64_9_from_str() {
         assert_eq!("".parse::<Int64_9>(), Err(ParseDecimalError::MissingDecimalPoint));
+        expect![[r#"
+            Err(
+                ParseInt(
+                    ParseIntError {
+                        kind: Empty,
+                    },
+                ),
+            )
+        "#]]
+        .assert_debug_eq(&"1.".parse::<Int64_9>());
         assert_eq!("1.0".parse::<Int64_9>(), Ok(Int64_9::ONE));
         assert_eq!("0.1".parse::<Int64_9>(), Ok(Decimal(10i64.pow(8))));
         assert_eq!("0.123456789".parse::<Int64_9>(), Ok(Decimal(123456789)));
