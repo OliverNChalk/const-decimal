@@ -2,7 +2,8 @@ use ruint::aliases::U256;
 use ruint::Uint;
 
 pub trait FullMulDiv {
-    /// Implements `a * b / c` full width on `a * b`.
+    /// Implements `a * b / c` with full width on the intermediate `a * b`
+    /// state.
     fn full_mul_div(self, rhs: Self, div: Self) -> Self;
 }
 
