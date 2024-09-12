@@ -6,7 +6,7 @@ pub trait FullMulDiv {
     fn full_mul_div(self, rhs: Self, div: Self) -> Self;
 }
 
-macro_rules! impl_primitive_mul_div {
+macro_rules! impl_primitive {
     ($primary:ty, $intermediate:ty) => {
         impl FullMulDiv for $primary {
             fn full_mul_div(self, rhs: Self, div: Self) -> Self {
@@ -22,14 +22,14 @@ macro_rules! impl_primitive_mul_div {
     };
 }
 
-impl_primitive_mul_div!(u8, u16);
-impl_primitive_mul_div!(i8, i16);
-impl_primitive_mul_div!(u16, u32);
-impl_primitive_mul_div!(i16, i32);
-impl_primitive_mul_div!(u32, u64);
-impl_primitive_mul_div!(i32, i64);
-impl_primitive_mul_div!(u64, u128);
-impl_primitive_mul_div!(i64, i128);
+impl_primitive!(u8, u16);
+impl_primitive!(i8, i16);
+impl_primitive!(u16, u32);
+impl_primitive!(i16, i32);
+impl_primitive!(u32, u64);
+impl_primitive!(i32, i64);
+impl_primitive!(u64, u128);
+impl_primitive!(i64, i128);
 
 impl FullMulDiv for u128 {
     fn full_mul_div(self, rhs: Self, div: Self) -> Self {
