@@ -25,6 +25,8 @@ where
 fn main() {
     let mut criterion = criterion::Criterion::default().configure_from_args();
 
+    // TODO: Our `hi` range for signed integers does not sample negative values.
+
     bench_integers::<9, u64>(
         &mut criterion.benchmark_group("u64_9"),
         0..(u32::MAX as u64),

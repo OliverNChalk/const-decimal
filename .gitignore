@@ -1,3 +1,4 @@
 /target
 /logs
 /mutants.out*
+/lcov.info
