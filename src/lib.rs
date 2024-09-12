@@ -1,5 +1,7 @@
 // TODO: Attempt to do this generically.
 mod aliases;
+#[cfg(test)]
+mod arbitrary;
 mod cheats;
 mod decimal;
 mod display;

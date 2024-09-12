@@ -1,6 +1,9 @@
-use std::ops::{Add, Neg, Not, Sub};
+use std::fmt::Display;
+use std::num::ParseIntError;
+use std::ops::{Add, Div, Neg, Not, Rem, Sub};
+use std::str::FromStr;
 
-use num_traits::{Bounded, ConstOne, ConstZero, One, WrappingAdd};
+use num_traits::{Bounded, ConstOne, ConstZero, One, Pow, WrappingAdd};
 
 use crate::cheats::Cheats;
 use crate::full_mul_div::FullMulDiv;
@@ -15,13 +18,20 @@ pub trait Primitive:
     + Add<Output = Self>
     + WrappingAdd<Output = Self>
     + Sub<Output = Self>
+    + Div<Output = Self>
+    + Rem<Output = Self>
     + Not<Output = Self>
+    + Pow<usize, Output = Self>
     + Clone
     + Copy
     + PartialEq
     + Eq
     + PartialOrd
-    + Ord {}
+    + Ord
+    + Display
+    + FromStr<Err = ParseIntError>
+{
+}
 
 impl<T> Primitive for T where
     T: ConstZero
@@ -31,13 +41,18 @@ impl<T> Primitive for T where
         + Add<Output = Self>
         + WrappingAdd<Output = Self>
         + Sub<Output = Self>
+        + Div<Output = Self>
+        + Rem<Output = Self>
         + Not<Output = Self>
+        + Pow<usize, Output = Self>
         + Clone
         + Copy
         + PartialEq
         + Eq
         + PartialOrd
         + Ord
+        + Display
+        + FromStr<Err = ParseIntError>
 {
 }
 

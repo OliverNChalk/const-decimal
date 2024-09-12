@@ -1,17 +1,15 @@
 use std::cmp::Ordering;
 use std::fmt::Display;
 use std::num::ParseIntError;
-use std::ops::{Div, Rem};
 use std::str::FromStr;
 
-use num_traits::Pow;
 use thiserror::Error;
 
 use crate::{Decimal, Integer};
 
 impl<I, const D: u8> Display for Decimal<I, D>
 where
-    I: Integer<D> + Div<Output = I> + Rem<Output = I> + Display,
+    I: Integer<D>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let (sign, unsigned) = match self.0 < I::ONE {
@@ -29,7 +27,7 @@ where
 
 impl<I, const D: u8> FromStr for Decimal<I, D>
 where
-    I: Integer<D> + FromStr<Err = ParseIntError> + Pow<usize, Output = I>,
+    I: Integer<D>,
 {
     type Err = ParseDecimalError;
 
@@ -79,6 +77,9 @@ pub enum ParseDecimalError {
 
 #[cfg(test)]
 mod tests {
+    use proptest::prelude::Arbitrary;
+    use proptest::test_runner::TestRunner;
+
     use super::*;
     use crate::{Int64_9, Uint64_9};
 
@@ -127,6 +128,44 @@ mod tests {
         assert_eq!("-0.0000000001".parse::<Int64_9>(), Err(ParseDecimalError::PrecisionLoss(10)));
     }
 
-    // TODO: Proptest that round tripping a random decimal produces the same
-    // value.
+    // TODO: Round trip fuzz test does not cover strings with precision greater/less
+    // than target precision.
+
+    #[test]
+    fn uint64_9_round_trip() {
+        decimal_round_trip::<9, u64>();
+    }
+
+    #[test]
+    fn int64_9_round_trip() {
+        decimal_round_trip::<9, i64>();
+    }
+
+    #[test]
+    fn uint128_18_round_trip() {
+        decimal_round_trip::<9, u64>();
+    }
+
+    #[test]
+    fn int128_18_round_trip() {
+        decimal_round_trip::<9, i64>();
+    }
+
+    fn decimal_round_trip<const D: u8, I>()
+    where
+        I: Integer<D> + Arbitrary,
+    {
+        let mut runner = TestRunner::default();
+        let input = Decimal::arbitrary();
+
+        runner
+            .run(&input, |decimal: Decimal<I, D>| {
+                let round_trip = decimal.to_string().parse().unwrap();
+
+                assert_eq!(decimal, round_trip);
+
+                Ok(())
+            })
+            .unwrap();
+    }
 }
