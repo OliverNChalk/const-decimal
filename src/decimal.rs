@@ -20,12 +20,9 @@ pub type Int128_18 = Decimal<i128, 18>;
 #[repr(transparent)]
 pub struct Decimal<I, const D: u8>(pub I);
 
-pub trait Integer<const D: u8>:
-    // `const_decimal`
-    Cheats<D>
-    + FullMulDiv
+pub trait Primitive:
     // `num-traits`
-    + ConstZero
+    ConstZero
     + ConstOne
     + One
     + Bounded
@@ -34,13 +31,13 @@ pub trait Integer<const D: u8>:
     + Sub<Output = Self>
     + Clone
     + Copy
-{
-}
+    + PartialEq
+    + Eq
+    + PartialOrd
+    + Ord {}
 
-impl<I, const D: u8> Integer<D> for I where
-    I: Cheats<D>
-        + FullMulDiv
-        + ConstZero
+impl<T> Primitive for T where
+    T: ConstZero
         + ConstOne
         + One
         + Bounded
@@ -48,8 +45,16 @@ impl<I, const D: u8> Integer<D> for I where
         + Sub<Output = Self>
         + Clone
         + Copy
+        + PartialEq
+        + Eq
+        + PartialOrd
+        + Ord
 {
 }
+
+pub trait Integer<const D: u8>: Cheats<D> + FullMulDiv + Primitive {}
+
+impl<I, const D: u8> Integer<D> for I where I: Cheats<D> + FullMulDiv + Primitive {}
 
 pub trait SignedInteger<const D: u8>: Integer<D> + Neg<Output = Self> {}
 

@@ -10,6 +10,7 @@ use super::*;
 // - Is there a reasonable way to fuzz test the full mul/div range (i.e. check
 //   overflow handling?). It's tricky because Decimal uses MulDiv internally
 //   which does a full multiplication then division.
+// - Actually test the negative range.
 
 macro_rules! fuzz_against_primitive {
     ($primitive:tt, $decimals:literal) => {
@@ -58,6 +59,7 @@ macro_rules! fuzz_against_primitive {
                 /// Multiplication requires the result to be divided by the scaling factor.
                 #[test]
                 fn [<$primitive _ $decimals _mul>](
+                    // TODO: Could limit shifting to SCALING_FACTOR BITS?
                     x in 0..($primitive::MAX.shr($primitive::BITS / 2)),
                     y in 0..($primitive::MAX.shr($primitive::BITS / 2)),
                 ) {

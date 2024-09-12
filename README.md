@@ -10,5 +10,7 @@ properties:
 - Can losslessly represent a decimal with `D` precision.
 - Add/Sub/Mul are lossless.
 - Division truncates the remainder deterministically like integer division.
-- All overflows/underflows are panics.
-  - TODO: Add wrapping/unchecked operations.
+
+## TODO
+
+- Decide on whether we want to make checked + panicking maths the default.

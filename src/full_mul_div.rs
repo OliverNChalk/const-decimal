@@ -9,9 +9,12 @@ macro_rules! impl_primitive_mul_div {
     ($primary:ty, $intermediate:ty) => {
         impl FullMulDiv for $primary {
             fn full_mul_div(self, rhs: Self, div: Self) -> Self {
-                ((self as $intermediate * rhs as $intermediate) / div as $intermediate)
-                    .try_into()
-                    .unwrap()
+                let numer = self as $intermediate * rhs as $intermediate;
+                let denom = div as $intermediate;
+                let out = numer / denom;
+
+                out.try_into()
+                    .unwrap_or_else(|_| panic!("Cast failed; {out}"))
             }
         }
     };
