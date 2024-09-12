@@ -18,8 +18,8 @@ where
             true => ("-", (!self.0).wrapping_add(&I::ONE)),
             false => ("", self.0),
         };
-        let integer = unsigned / I::PRECISION_FACTOR;
-        let fractional = unsigned % I::PRECISION_FACTOR;
+        let integer = unsigned / I::SCALING_FACTOR;
+        let fractional = unsigned % I::SCALING_FACTOR;
 
         write!(f, "{sign}{integer}.{fractional:0>decimals$}", decimals = D as usize)
     }
@@ -40,7 +40,7 @@ where
             .split_once('.')
             .ok_or(ParseDecimalError::MissingDecimalPoint)?;
         let integer = I::from_str(integer_s)?;
-        let integer = integer * I::PRECISION_FACTOR;
+        let integer = integer * I::SCALING_FACTOR;
         let fractional = I::from_str(fractional_s)?;
         let fractional = match fractional_s.len().cmp(&(D as usize)) {
             Ordering::Equal => fractional,

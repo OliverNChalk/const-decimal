@@ -9,7 +9,6 @@ mod from;
 mod full_mul_div;
 #[cfg(test)]
 mod fuzz;
-mod ops;
 mod traits;
 
 pub use aliases::*;
