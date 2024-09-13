@@ -4,6 +4,7 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 use crate::integer::{Integer, SignedInteger};
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "borsh", derive(borsh::BorshSerialize, borsh::BorshDeserialize))]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct Decimal<I, const D: u8>(pub I);
@@ -152,21 +153,6 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-
-    macro_rules! apply_to_common_variants {
-        ($macro:ident) => {
-            $macro!(u8, 1);
-            $macro!(i8, 1);
-            $macro!(u16, 2);
-            $macro!(i16, 2);
-            $macro!(u32, 5);
-            $macro!(i32, 5);
-            $macro!(u64, 9);
-            $macro!(i64, 9);
-            $macro!(u128, 18);
-            $macro!(i128, 18);
-        };
-    }
 
     macro_rules! test_basic_ops {
         ($underlying:ty, $decimals:literal) => {
@@ -604,7 +590,7 @@ mod tests {
         });
     }
 
-    apply_to_common_variants!(test_basic_ops);
-    apply_to_common_variants!(fuzz_against_primitive);
-    apply_to_common_variants!(differential_fuzz);
+    crate::macros::apply_to_common_variants!(test_basic_ops);
+    crate::macros::apply_to_common_variants!(fuzz_against_primitive);
+    crate::macros::apply_to_common_variants!(differential_fuzz);
 }

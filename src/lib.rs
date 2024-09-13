@@ -14,6 +14,10 @@ mod foreign_traits;
 mod full_mul_div;
 /// Trait definition for underlying integer.
 mod integer;
+/// Macros used in tests.
+#[cfg(test)]
+#[macro_use]
+pub(crate) mod macros;
 
 pub use aliases::*;
 pub use decimal::*;

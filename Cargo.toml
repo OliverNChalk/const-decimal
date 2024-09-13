@@ -22,8 +22,10 @@ module_name_repetitions = "allow"
 
 [features]
 serde = ["dep:serde"]
+borsh = ["dep:borsh"]
 
 [dependencies]
+borsh = { version = "1.5.1", features = ["derive"], optional = true }
 num-traits = "0.2.19"
 paste = "1.0.15"
 ruint = "1.12.3"
