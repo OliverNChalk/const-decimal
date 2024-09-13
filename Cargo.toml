@@ -1,9 +1,15 @@
 [package]
 name = "const-decimal"
+description = "Integer-backed decimals with constant precision"
 version = "0.1.0"
-authors = ["Oliver Chalk"]
 edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Oliver Chalk"]
 readme = "README.md"
+repository = "https://github.com/OliverNChalk/const-decimal"
+homepage = "https://github.com/OliverNChalk/const-decimal"
+keywords = ["decimal", "math", "finance"]
+categories = ["finance", "mathematics"]
 
 [lints.clippy]
 pedantic = "warn"
