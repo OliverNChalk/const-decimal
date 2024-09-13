@@ -1,2 +1,4 @@
 #[cfg(test)]
-mod arbitrary;
+mod malachite;
+#[cfg(test)]
+mod proptest;
