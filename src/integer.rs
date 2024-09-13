@@ -3,69 +3,42 @@ use std::num::ParseIntError;
 use std::ops::{Not, Shr};
 use std::str::FromStr;
 
-use num_traits::{
-    Bounded, CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedSub, ConstOne,
-    ConstZero, One, Pow, WrappingAdd,
-};
+use num_traits::{CheckedNeg, CheckedRem, ConstOne, ConstZero, One, PrimInt, WrappingAdd};
 
 use crate::cheats::Cheats;
 use crate::full_mul_div::FullMulDiv;
 
-pub trait Primitive:
-    // `num-traits`
-    ConstZero
+pub trait Integer<const D: u8>:
+    PrimInt
+    + ConstZero
     + ConstOne
     + One
-    + Bounded
-    // `std`
-    + CheckedAdd<Output = Self>
     + WrappingAdd<Output = Self>
-    + CheckedSub<Output = Self>
-    + CheckedMul<Output = Self>
-    + CheckedDiv<Output = Self>
     + CheckedRem<Output = Self>
     + Not<Output = Self>
-    + Pow<usize, Output = Self>
     + Shr<u32, Output = Self>
-    + Clone
-    + Copy
-    + PartialEq
-    + Eq
-    + PartialOrd
-    + Ord
     + Display
     + FromStr<Err = ParseIntError>
+    + Cheats<D>
+    + FullMulDiv
 {
 }
 
-impl<T> Primitive for T where
-    T: ConstZero
+impl<I, const D: u8> Integer<D> for I where
+    I: PrimInt
+        + ConstZero
         + ConstOne
         + One
-        + Bounded
-        + CheckedAdd<Output = Self>
         + WrappingAdd<Output = Self>
-        + CheckedSub<Output = Self>
-        + CheckedMul<Output = Self>
-        + CheckedDiv<Output = Self>
         + CheckedRem<Output = Self>
         + Not<Output = Self>
-        + Pow<usize, Output = Self>
         + Shr<u32, Output = Self>
-        + Clone
-        + Copy
-        + PartialEq
-        + Eq
-        + PartialOrd
-        + Ord
         + Display
         + FromStr<Err = ParseIntError>
+        + Cheats<D>
+        + FullMulDiv
 {
 }
-
-pub trait Integer<const D: u8>: Cheats<D> + FullMulDiv + Primitive {}
-
-impl<I, const D: u8> Integer<D> for I where I: Cheats<D> + FullMulDiv + Primitive {}
 
 pub trait SignedInteger<const D: u8>: Integer<D> + CheckedNeg {}
 

@@ -1,9 +1,10 @@
 use std::fmt::Debug;
 use std::ops::Div;
 
-use const_decimal::{Decimal, Integer, Primitive};
+use const_decimal::{Decimal, Integer};
 use criterion::measurement::WallTime;
 use criterion::{black_box, BatchSize, BenchmarkGroup};
+use num_traits::{ConstOne, ConstZero, PrimInt};
 use prop::strategy::ValueTree;
 use prop::test_runner::TestRunner;
 use proptest::prelude::*;
@@ -26,7 +27,7 @@ fn primitive_div<I>(
     strategy: impl Strategy<Value = I> + Clone,
     strategy_label: &str,
 ) where
-    I: Primitive + Div<Output = I>,
+    I: PrimInt + ConstZero + ConstOne,
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();

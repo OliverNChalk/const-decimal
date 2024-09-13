@@ -30,6 +30,7 @@ fn main() {
     bench_integers::<9, u64>(
         &mut criterion.benchmark_group("u64_9"),
         0..(u32::MAX as u64),
+        // TODO: This upper bound is lower than necessary.
         ((u32::MAX as u64) - 10u64.pow(9) + 1)..(u64::MAX / 10u64.pow(9)),
         (u64::MAX / 10u64.pow(9) + 1)..u64::MAX,
     );
@@ -44,6 +45,7 @@ fn main() {
     bench_integers::<18, u128>(
         &mut criterion.benchmark_group("u128_18"),
         0..(u64::MAX as u128),
+        // TODO: This upper bound is lower than necessary.
         ((u64::MAX as u128) - 10u128.pow(18) + 1)..(u128::MAX / 10u128.pow(18)),
         (u128::MAX / 10u128.pow(18) + 1)..u128::MAX,
     );

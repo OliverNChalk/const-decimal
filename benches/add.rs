@@ -1,6 +1,7 @@
-use const_decimal::{Decimal, Integer, Primitive};
+use const_decimal::{Decimal, Integer};
 use criterion::measurement::WallTime;
 use criterion::{black_box, BatchSize, BenchmarkGroup};
+use num_traits::PrimInt;
 use prop::strategy::ValueTree;
 use prop::test_runner::TestRunner;
 use proptest::prelude::*;
@@ -15,7 +16,7 @@ where
 
 fn bench_primitive_add<I>(group: &mut BenchmarkGroup<'_, WallTime>)
 where
-    I: Primitive + Arbitrary,
+    I: PrimInt + Arbitrary,
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();

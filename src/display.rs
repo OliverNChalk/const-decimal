@@ -59,7 +59,9 @@ where
                 let shortfall = D as usize - fractional_s_len;
 
                 // TODO: Remove the `checked_mul` in favor of ensuring `D` cannot overflow.
-                fractional.checked_mul(&I::pow(I::TEN, shortfall)).unwrap()
+                fractional
+                    .checked_mul(&I::pow(I::TEN, shortfall.try_into().unwrap()))
+                    .unwrap()
             }
             Ordering::Greater => return Err(ParseDecimalError::PrecisionLoss(fractional_s.len())),
         };

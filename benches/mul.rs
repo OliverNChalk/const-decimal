@@ -1,8 +1,9 @@
 use std::fmt::Debug;
 
-use const_decimal::{Decimal, Integer, Primitive};
+use const_decimal::{Decimal, Integer};
 use criterion::measurement::WallTime;
 use criterion::{black_box, BatchSize, BenchmarkGroup};
+use num_traits::PrimInt;
 use prop::strategy::ValueTree;
 use prop::test_runner::TestRunner;
 use proptest::prelude::*;
@@ -25,7 +26,7 @@ fn primitive_mul<I>(
     strategy: impl Strategy<Value = I> + Clone,
     strategy_label: &str,
 ) where
-    I: Primitive,
+    I: PrimInt,
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();
