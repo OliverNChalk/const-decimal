@@ -6,21 +6,34 @@ edition = "2021"
 readme = "README.md"
 
 [lints.clippy]
-cast_possible_truncation = 'warn'
-cast_possible_wrap = 'warn'
-cast_sign_loss = 'warn'
+pedantic = "warn"
+
 # See `clippy.toml`.
-disallowed_methods = 'warn'
+disallowed_methods = "warn"
+arithmetic_side_effects = "warn"
+match_bool = "allow"
+module_name_repetitions = "allow"
 
 [features]
 serde = ["dep:serde"]
 
+[[bench]]
+name = "main"
+path = "benches/main.rs"
+harness = false
+
 [dependencies]
 num-traits = "0.2.19"
-serde = { version = "1.0.210", features = ["derive"], optional = true }
+paste = "1.0.15"
+ruint = "1.12.3"
+serde = { version = "~1.0", features = ["derive"], optional = true }
+thiserror = "1.0.63"
 
 [dev-dependencies]
-paste = "1.0.15"
+criterion = "0.5.1"
+expect-test = "1.5.0"
+malachite = "0.4.16"
+proptest = "1.5.0"
 
 [profile.release]
 opt-level = 3

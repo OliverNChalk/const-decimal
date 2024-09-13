@@ -1,0 +1,22 @@
+use std::fmt::Debug;
+
+use proptest::arbitrary::Mapped;
+use proptest::prelude::{any, Arbitrary, Strategy};
+
+use crate::{Decimal, Integer};
+
+impl<const D: u8, I> Arbitrary for Decimal<I, D>
+where
+    I: Integer<D> + Arbitrary + Debug,
+{
+    type Parameters = ();
+    type Strategy = Mapped<I, Self>;
+
+    fn arbitrary() -> Self::Strategy {
+        Self::arbitrary_with(())
+    }
+
+    fn arbitrary_with(_: Self::Parameters) -> Self::Strategy {
+        any::<I>().prop_map(|integer| Decimal(integer))
+    }
+}
