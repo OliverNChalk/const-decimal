@@ -86,3 +86,52 @@ impl FullMulDiv for i128 {
         }
     }
 }
+
+// TODO: Fuzz test u128 & i128 full mul div implementations against a reference
+// implementation.
+
+#[cfg(test)]
+mod tests {
+    use malachite::Integer;
+    use proptest::prelude::*;
+
+    use super::*;
+
+    #[test]
+    fn u128_full_mul_div() {
+        proptest!(|(a: u128, b: u128, div: u128)| {
+            if div == 0 {
+                return Ok(());
+            }
+
+            // Compute reference value.
+            let reference = Integer::from(a) * Integer::from(b) / Integer::from(div);
+            println!("{reference}");
+
+            // If the output fits in a u128 then ours should match.
+            match u128::try_from(&reference) {
+                Ok(reference) => assert_eq!(u128::full_mul_div(a, b, div), reference),
+                Err(_) => {}
+            };
+        });
+    }
+
+    #[test]
+    fn i128_full_mul_div() {
+        proptest!(|(a: i128, b: i128, div: i128)| {
+            if div == 0 {
+                return Ok(());
+            }
+
+            // Compute reference value.
+            let reference = Integer::from(a) * Integer::from(b) / Integer::from(div);
+            println!("{reference}");
+
+            // If the output fits in an i128 then ours should match.
+            match i128::try_from(&reference) {
+                Ok(reference) => assert_eq!(i128::full_mul_div(a, b, div), reference),
+                Err(_) => {}
+            };
+        });
+    }
+}

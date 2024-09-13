@@ -34,6 +34,7 @@ thiserror = "1.0.63"
 [dev-dependencies]
 criterion = "0.5.1"
 expect-test = "1.5.0"
+malachite = "0.4.16"
 proptest = "1.5.0"
 
 [profile.release]
