@@ -11,6 +11,7 @@ mod add;
 mod div;
 mod mul;
 mod sub;
+mod to_f64;
 
 fn to_sign<I>(positive: bool) -> I
 where
@@ -73,4 +74,5 @@ fn bench_integers<const D: u8, I>(
     sub::bench_all::<D, I>(group);
     mul::bench_all::<D, I>(group, lo_range.clone(), hi_mul_range);
     div::bench_all::<D, I>(group, lo_range, hi_div_range);
+    to_f64::bench_all::<D, I>(group);
 }

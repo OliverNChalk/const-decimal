@@ -13,7 +13,6 @@ macro_rules! apply_to_common_variants {
     };
 }
 
-#[cfg(feature = "borsh")]
 macro_rules! generate_tests_for_common_variants {
     ($f:ident) => {
         crate::macros::generate_test!($f, u8, 1);
@@ -29,7 +28,6 @@ macro_rules! generate_tests_for_common_variants {
     };
 }
 
-#[cfg(feature = "borsh")]
 macro_rules! generate_test {
     ($f:ident, $underlying:ty, $decimals:literal) => {
         ::paste::paste! {
@@ -41,6 +39,4 @@ macro_rules! generate_test {
     };
 }
 
-pub(crate) use apply_to_common_variants;
-#[cfg(feature = "borsh")]
-pub(crate) use {generate_test, generate_tests_for_common_variants};
+pub(crate) use {apply_to_common_variants, generate_test, generate_tests_for_common_variants};
