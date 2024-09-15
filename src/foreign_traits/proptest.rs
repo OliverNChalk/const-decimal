@@ -3,11 +3,11 @@ use std::fmt::Debug;
 use proptest::arbitrary::Mapped;
 use proptest::prelude::{any, Arbitrary, Strategy};
 
-use crate::{Decimal, Integer};
+use crate::{Decimal, ScaledInteger};
 
 impl<const D: u8, I> Arbitrary for Decimal<I, D>
 where
-    I: Integer<D> + Arbitrary + Debug,
+    I: ScaledInteger<D> + Arbitrary + Debug,
 {
     type Parameters = ();
     type Strategy = Mapped<I, Self>;

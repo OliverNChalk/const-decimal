@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::ops::Div;
 
-use const_decimal::{Decimal, Integer};
+use const_decimal::{Decimal, ScaledInteger};
 use criterion::measurement::WallTime;
 use criterion::{black_box, BatchSize, BenchmarkGroup};
 use num_traits::{ConstOne, ConstZero, PrimInt};
@@ -14,7 +14,7 @@ pub fn bench_all<const D: u8, I>(
     lo_strategy: impl Strategy<Value = I> + Clone,
     hi_strategy: impl Strategy<Value = I> + Clone,
 ) where
-    I: Integer<D> + Debug + Div<Output = I>,
+    I: ScaledInteger<D> + Debug + Div<Output = I>,
 {
     primitive_div::<I>(group, lo_strategy.clone(), "lo");
     decimal_div::<D, I>(group, lo_strategy, "lo");
@@ -56,7 +56,7 @@ fn decimal_div<const D: u8, I>(
     strategy: impl Strategy<Value = I> + Clone,
     strategy_label: &str,
 ) where
-    I: Integer<D> + Debug,
+    I: ScaledInteger<D> + Debug,
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();

@@ -4,13 +4,13 @@ mod tests {
     use proptest::prelude::*;
 
     use crate::macros::generate_tests_for_common_variants;
-    use crate::{Decimal, Integer};
+    use crate::{Decimal, ScaledInteger};
 
     generate_tests_for_common_variants!(round_trip_borsh);
 
     fn round_trip_borsh<I, const D: u8>()
     where
-        I: Integer<D> + Arbitrary + BorshSerialize + BorshDeserialize,
+        I: ScaledInteger<D> + Arbitrary + BorshSerialize + BorshDeserialize,
     {
         proptest!(|(input: Decimal<I, D>)| {
             let serialized = borsh::to_vec(&input).unwrap();

@@ -18,6 +18,9 @@ mod integer;
 #[cfg(test)]
 #[macro_use]
 pub(crate) mod macros;
+/// Underlying algorithms used by other operations.
+#[cfg(test)]
+pub(crate) mod algorithms;
 
 pub use aliases::*;
 pub use decimal::*;

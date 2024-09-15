@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::ops::{Div, Neg};
 
-use const_decimal::Integer;
+use const_decimal::ScaledInteger;
 use criterion::measurement::WallTime;
 use criterion::BenchmarkGroup;
 use num_traits::ConstOne;
@@ -67,7 +67,7 @@ fn bench_integers<const D: u8, I>(
     hi_mul_range: impl Strategy<Value = I> + Clone + Debug,
     hi_div_range: impl Strategy<Value = I> + Clone + Debug,
 ) where
-    I: Integer<D> + Arbitrary + Div<Output = I>,
+    I: ScaledInteger<D> + Arbitrary + Div<Output = I>,
 {
     add::bench_all::<D, I>(group);
     sub::bench_all::<D, I>(group);

@@ -5,11 +5,11 @@ use std::str::FromStr;
 
 use thiserror::Error;
 
-use crate::{Decimal, Integer};
+use crate::{Decimal, ScaledInteger};
 
 impl<I, const D: u8> Display for Decimal<I, D>
 where
-    I: Integer<D>,
+    I: ScaledInteger<D>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let (sign, unsigned) = match self.0 < I::ONE {
@@ -31,7 +31,7 @@ where
 
 impl<I, const D: u8> FromStr for Decimal<I, D>
 where
-    I: Integer<D>,
+    I: ScaledInteger<D>,
 {
     type Err = ParseDecimalError<I>;
 
@@ -210,7 +210,7 @@ mod tests {
 
     fn decimal_round_trip<const D: u8, I>()
     where
-        I: Integer<D> + Arbitrary,
+        I: ScaledInteger<D> + Arbitrary,
     {
         let mut runner = TestRunner::default();
         let input = Decimal::arbitrary();
@@ -248,7 +248,7 @@ mod tests {
 
     fn decimal_parse_no_panic<const D: u8, I>()
     where
-        I: Integer<D>,
+        I: ScaledInteger<D>,
     {
         proptest!(|(decimal_s: String)| {
             let _ = decimal_s.parse::<Decimal<I, D>>();
@@ -277,7 +277,7 @@ mod tests {
 
     fn decimal_parse_numeric_no_panic<const D: u8, I>()
     where
-        I: Integer<D>,
+        I: ScaledInteger<D>,
     {
         proptest!(|(decimal_s in "[0-9]{0,24}\\.[0-9]{0,24}")| {
             let _ = decimal_s.parse::<Decimal<I, D>>();

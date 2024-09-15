@@ -1,11 +1,11 @@
 use malachite::num::basic::integers::PrimitiveInt;
 use malachite::Rational;
 
-use crate::{Decimal, Integer};
+use crate::{Decimal, ScaledInteger};
 
 impl<I, const D: u8> From<Decimal<I, D>> for Rational
 where
-    I: Integer<D> + PrimitiveInt,
+    I: ScaledInteger<D> + PrimitiveInt,
     malachite::Integer: From<I>,
 {
     fn from(value: Decimal<I, D>) -> Self {

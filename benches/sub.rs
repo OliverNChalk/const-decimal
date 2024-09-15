@@ -1,4 +1,4 @@
-use const_decimal::{Decimal, Integer};
+use const_decimal::{Decimal, ScaledInteger};
 use criterion::measurement::WallTime;
 use criterion::{black_box, BatchSize, BenchmarkGroup};
 use num_traits::PrimInt;
@@ -8,7 +8,7 @@ use proptest::prelude::*;
 
 pub fn bench_all<const D: u8, I>(group: &mut BenchmarkGroup<'_, WallTime>)
 where
-    I: Integer<D> + Arbitrary,
+    I: ScaledInteger<D> + Arbitrary,
 {
     bench_primitive_sub::<I>(group);
     bench_decimal_sub::<D, I>(group);
@@ -33,7 +33,7 @@ where
 
 fn bench_decimal_sub<const D: u8, I>(group: &mut BenchmarkGroup<'_, WallTime>)
 where
-    I: Integer<D> + Arbitrary,
+    I: ScaledInteger<D> + Arbitrary,
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();
