@@ -12,7 +12,7 @@ where
     I: ScaledInteger<D>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let (sign, unsigned) = match self.0 < I::ONE {
+        let (sign, unsigned) = match self.0 < I::ZERO {
             // NB: Integers do not implement negation, so lets use two's complement to flip the sign
             // of the signed integer (modelled as an unsigned integer).
             true => ("-", (!self.0).wrapping_add(&I::ONE)),
@@ -150,6 +150,7 @@ mod tests {
 
     #[test]
     fn int64_9_to_string() {
+        assert_eq!(Int64_9::ZERO.to_string(), "0.000000000");
         assert_eq!(Int64_9::ONE.to_string(), "1.000000000");
         assert_eq!(Int64_9::from_scaled(123, 9).to_string(), "0.000000123");
         assert_eq!((Int64_9::ONE + Int64_9::from_scaled(123, 9)).to_string(), "1.000000123");

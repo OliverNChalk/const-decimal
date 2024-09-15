@@ -4,6 +4,10 @@ All notable changes to `const-decimal`.
 
 ## Unreleased
 
+## 0.2.2
+
+- Correctly format `Decimal::ZERO` as `0.0...` not `-0.0...`.
+
 ## 0.2.1
 
 - Added `Decimal::to_f64(&self)`.
