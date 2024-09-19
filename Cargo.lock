@@ -349,6 +349,7 @@ version = "0.3.0"
 dependencies = [
  "borsh",
  "criterion",
+ "decimal-shared",
  "expect-test",
  "malachite",
  "num-traits",
@@ -437,6 +438,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "decimal"
+version = "0.1.0"
+dependencies = [
+ "decimal-shared",
+]
+
+[[package]]
+name = "decimal-shared"
+version = "0.1.0"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
 name = "derivative"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -470,22 +485,6 @@ name = "dissimilar"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59f8e79d1fbf76bdfbde321e902714bf6c49df88a7dda6fc682fc2979226962d"
-
-[[package]]
-name = "dyn-decimal"
-version = "0.1.0"
-dependencies = [
- "borsh",
- "criterion",
- "expect-test",
- "malachite",
- "num-traits",
- "paste",
- "proptest",
- "ruint",
- "serde",
- "thiserror",
-]
 
 [[package]]
 name = "either"

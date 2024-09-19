@@ -27,8 +27,9 @@ malachite = ["dep:malachite"]
 
 [dependencies]
 borsh = { version = "1.5.1", features = ["derive"], optional = true }
+decimal-shared = { workspace = true }
 malachite = { version = "0.4.16", optional = true }
-num-traits = "0.2.19"
+num-traits = { workspace = true }
 paste = "1.0.15"
 ruint = "1.12.3"
 serde = { version = "~1.0", features = ["derive"], optional = true }
