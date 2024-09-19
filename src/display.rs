@@ -109,8 +109,11 @@ mod tests {
     #[test]
     fn uint64_9_to_string() {
         assert_eq!(Uint64_9::ONE.to_string(), "1.000000000");
-        assert_eq!(Uint64_9::from_scaled(123, 9).to_string(), "0.000000123");
-        assert_eq!((Uint64_9::ONE + Uint64_9::from_scaled(123, 9)).to_string(), "1.000000123");
+        assert_eq!(Uint64_9::try_from_scaled(123, 9).unwrap().to_string(), "0.000000123");
+        assert_eq!(
+            (Uint64_9::ONE + Uint64_9::try_from_scaled(123, 9).unwrap()).to_string(),
+            "1.000000123"
+        );
     }
 
     #[test]
@@ -152,11 +155,17 @@ mod tests {
     fn int64_9_to_string() {
         assert_eq!(Int64_9::ZERO.to_string(), "0.000000000");
         assert_eq!(Int64_9::ONE.to_string(), "1.000000000");
-        assert_eq!(Int64_9::from_scaled(123, 9).to_string(), "0.000000123");
-        assert_eq!((Int64_9::ONE + Int64_9::from_scaled(123, 9)).to_string(), "1.000000123");
+        assert_eq!(Int64_9::try_from_scaled(123, 9).unwrap().to_string(), "0.000000123");
+        assert_eq!(
+            (Int64_9::ONE + Int64_9::try_from_scaled(123, 9).unwrap()).to_string(),
+            "1.000000123"
+        );
         assert_eq!((-Int64_9::ONE).to_string(), "-1.000000000");
-        assert_eq!((-Int64_9::from_scaled(123, 9)).to_string(), "-0.000000123");
-        assert_eq!((-Int64_9::ONE + -Int64_9::from_scaled(123, 9)).to_string(), "-1.000000123");
+        assert_eq!((-Int64_9::try_from_scaled(123, 9).unwrap()).to_string(), "-0.000000123");
+        assert_eq!(
+            (-Int64_9::ONE + -Int64_9::try_from_scaled(123, 9).unwrap()).to_string(),
+            "-1.000000123"
+        );
     }
 
     #[test]

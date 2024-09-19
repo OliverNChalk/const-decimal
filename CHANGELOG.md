@@ -4,6 +4,10 @@ All notable changes to `const-decimal`.
 
 ## Unreleased
 
+## 0.3.0
+
+- BREAKING: Remove `from_scaled` in favor of `try_from_scaled`.
+
 ## 0.2.2
 
 - Correctly format `Decimal::ZERO` as `0.0...` not `-0.0...`.

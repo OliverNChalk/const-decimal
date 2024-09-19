@@ -31,25 +31,18 @@ where
         Decimal(I::max_value())
     }
 
-    // TODO: Add `try_from_scaled() -> Result<>`.
-
     /// Losslessly converts a scaled integer to this type.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the integer cannot be represented without precision
-    /// loss/overflow.
     ///
     /// # Examples
     ///
     /// ```rust
     /// use const_decimal::Decimal;
     ///
-    /// let five = Decimal::<u64, 3>::from_scaled(5, 0);
+    /// let five = Decimal::<u64, 3>::try_from_scaled(5, 0).unwrap();
     /// assert_eq!(five, Decimal::TWO + Decimal::TWO + Decimal::ONE);
     /// assert_eq!(five.0, 5000);
     /// ```
-    pub fn from_scaled(integer: I, scale: u8) -> Self {
+    pub fn try_from_scaled(integer: I, scale: u8) -> Option<Self> {
         match scale.cmp(&D) {
             Ordering::Greater => {
                 // SAFETY: We know `scale > D` so this cannot underflow.
@@ -59,25 +52,21 @@ where
                 // SAFETY: `divisor` cannot be zero as `x.pow(y)` cannot return 0.
                 #[allow(clippy::arithmetic_side_effects)]
                 let remainder = integer % divisor;
-                assert!(
-                    remainder == I::ZERO,
-                    "Cast would lose precision; input={integer}; scale={scale}; divisor={divisor}"
-                );
+                if remainder != I::ZERO {
+                    // NB: Cast would lose precision.
+                    return None;
+                }
 
-                // SAFETY: `Decimal::mul` panics on divide by zero.
-                #[allow(clippy::arithmetic_side_effects)]
-                Decimal(integer / divisor)
+                integer.checked_div(&divisor).map(Decimal)
             }
             Ordering::Less => {
                 // SAFETY: We know `scale < D` so this cannot underflow.
                 #[allow(clippy::arithmetic_side_effects)]
                 let multiplier = I::TEN.pow(u32::from(D - scale));
 
-                // SAFETY: `Decimal::mul` panics on overflow.
-                #[allow(clippy::arithmetic_side_effects)]
-                Decimal(integer * multiplier)
+                integer.checked_mul(&multiplier).map(Decimal)
             }
-            Ordering::Equal => Decimal(integer),
+            Ordering::Equal => Some(Decimal(integer)),
         }
     }
 
@@ -649,14 +638,12 @@ mod tests {
             let decimals = u8::try_from(decimals_percent * max_decimals / 100).unwrap();
             let scaling = I::TEN.pow(decimals as u32);
 
-            let out = std::panic::catch_unwind(|| {
-                Decimal::from_scaled(integer, decimals)
-            });
+            let out = Decimal::try_from_scaled(integer, decimals);
             let reference_out = Rational::from_integers(integer.into(), scaling.into());
 
             match out {
-                Ok(out) => assert_eq!(Rational::from(out), reference_out),
-                Err(_) => {
+                Some(out) => assert_eq!(Rational::from(out), reference_out),
+                None => {
                     let scaling: Integer = Decimal::<I, D>::SCALING_FACTOR.into();
                     let remainder = &scaling % Integer::from(reference_out.denominator_ref());
                     let information = &reference_out * Rational::from(scaling);
