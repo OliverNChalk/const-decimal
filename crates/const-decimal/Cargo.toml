@@ -1,0 +1,47 @@
+[package]
+name = "const-decimal"
+description = "Integer-backed decimals with constant precision"
+version = "0.3.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Oliver Chalk"]
+readme = "README.md"
+repository = "https://github.com/OliverNChalk/const-decimal"
+homepage = "https://github.com/OliverNChalk/const-decimal"
+keywords = ["decimal", "math", "finance"]
+categories = ["finance", "mathematics"]
+
+[lints.clippy]
+pedantic = "warn"
+
+# See `clippy.toml`.
+disallowed_methods = "warn"
+arithmetic_side_effects = "warn"
+match_bool = "allow"
+module_name_repetitions = "allow"
+
+[features]
+serde = ["dep:serde"]
+borsh = ["dep:borsh"]
+malachite = ["dep:malachite"]
+
+[dependencies]
+borsh = { version = "1.5.1", features = ["derive"], optional = true }
+decimal-shared = { workspace = true }
+malachite = { version = "0.4.16", optional = true }
+num-traits = { workspace = true }
+paste = "1.0.15"
+ruint = "1.12.3"
+serde = { version = "~1.0", features = ["derive"], optional = true }
+thiserror = "1.0.63"
+
+[dev-dependencies]
+criterion = { workspace = true }
+expect-test = { workspace = true }
+malachite = { workspace = true }
+proptest = { workspace = true }
+
+[[bench]]
+name = "main"
+path = "benches/main.rs"
+harness = false
