@@ -3,5 +3,9 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
+criterion = "0.5.1"
 decimal-shared = { path = "./crates/decimal-shared" }
+expect-test = "1.5.0"
+malachite = "0.4.16"
 num-traits = "0.2.19"
+proptest = "1.5.0"

@@ -1,22 +1,22 @@
-use const_decimal::{Decimal, ScaledInteger};
 use criterion::measurement::WallTime;
 use criterion::{black_box, BatchSize, BenchmarkGroup};
-use num_traits::PrimInt;
+use decimal::{Decimal, ScalingFactor};
+use decimal_shared::BasicInteger;
 use prop::strategy::ValueTree;
 use prop::test_runner::TestRunner;
 use proptest::prelude::*;
 
-pub fn bench_all<const D: u8, I>(group: &mut BenchmarkGroup<'_, WallTime>)
+pub fn bench_all<I>(group: &mut BenchmarkGroup<'_, WallTime>)
 where
-    I: ScaledInteger<D> + Arbitrary,
+    I: BasicInteger + ScalingFactor + Arbitrary,
 {
     bench_primitive_to_f64::<I>(group);
-    bench_decimal_to_f64::<D, I>(group);
+    bench_decimal_to_f64::<I>(group);
 }
 
 fn bench_primitive_to_f64<I>(group: &mut BenchmarkGroup<'_, WallTime>)
 where
-    I: PrimInt + Arbitrary,
+    I: BasicInteger + Arbitrary,
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();
@@ -31,13 +31,14 @@ where
     });
 }
 
-fn bench_decimal_to_f64<const D: u8, I>(group: &mut BenchmarkGroup<'_, WallTime>)
+fn bench_decimal_to_f64<I>(group: &mut BenchmarkGroup<'_, WallTime>)
 where
-    I: ScaledInteger<D> + Arbitrary,
+    I: BasicInteger + ScalingFactor + Arbitrary,
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();
-    let input = I::arbitrary().prop_map(|a| Decimal::<_, D>(a));
+    let input =
+        (I::arbitrary(), 0..18u8).prop_map(|(integer, decimals)| Decimal::new(integer, decimals));
 
     group.bench_function("decimal/to_f64", |bencher| {
         bencher.iter_batched(

@@ -24,6 +24,10 @@ module_name_repetitions = "allow"
 decimal-shared = { workspace = true }
 
 [dev-dependencies]
+criterion = { workspace = true }
+expect-test = { workspace = true }
+malachite = { workspace = true }
+proptest = { workspace = true }
 
 [[bench]]
 name = "main"

@@ -1,5 +1,8 @@
 use decimal_shared::BasicInteger;
 
+use crate::ScalingFactor;
+
+#[derive(Debug)]
 pub struct Decimal<I> {
     integer: I,
     decimals: u8,
@@ -7,7 +10,7 @@ pub struct Decimal<I> {
 
 impl<I> Decimal<I>
 where
-    I: BasicInteger,
+    I: BasicInteger + ScalingFactor,
 {
     pub fn new(integer: I, decimals: u8) -> Self {
         Decimal { integer, decimals }
@@ -24,10 +27,6 @@ where
     // SAFETY: `num_traits::to_f64` does not panic on primitive types.
     #[allow(clippy::missing_panics_doc)]
     pub fn to_f64(&self) -> f64 {
-        self.integer.to_f64().unwrap() / Self::scaling_factor(self.decimals).to_f64().unwrap()
-    }
-
-    fn scaling_factor(decimals: u8) -> I {
-        todo!();
+        self.integer.to_f64().unwrap() / I::scaling_factor(self.decimals).to_f64().unwrap()
     }
 }
