@@ -1,0 +1,50 @@
+[package]
+name = "dyn-decimal"
+description = "Integer-backed decimals with dynamic precision"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Oliver Chalk"]
+readme = "README.md"
+repository = "https://github.com/OliverNChalk/const-decimal"
+homepage = "https://github.com/OliverNChalk/const-decimal"
+keywords = ["decimal", "math", "finance"]
+categories = ["finance", "mathematics"]
+
+[lints.clippy]
+pedantic = "warn"
+
+# See `clippy.toml`.
+disallowed_methods = "warn"
+arithmetic_side_effects = "warn"
+match_bool = "allow"
+module_name_repetitions = "allow"
+
+[features]
+serde = ["dep:serde"]
+borsh = ["dep:borsh"]
+malachite = ["dep:malachite"]
+
+[dependencies]
+borsh = { version = "1.5.1", features = ["derive"], optional = true }
+malachite = { version = "0.4.16", optional = true }
+num-traits = "0.2.19"
+paste = "1.0.15"
+ruint = "1.12.3"
+serde = { version = "~1.0", features = ["derive"], optional = true }
+thiserror = "1.0.63"
+
+[dev-dependencies]
+criterion = "0.5.1"
+expect-test = "1.5.0"
+malachite = "0.4.16"
+proptest = "1.5.0"
+
+[profile.release]
+opt-level = 3
+debug = true
+
+[[bench]]
+name = "main"
+path = "benches/main.rs"
+harness = false
