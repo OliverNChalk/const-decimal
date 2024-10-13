@@ -11,15 +11,6 @@ homepage = "https://github.com/OliverNChalk/const-decimal"
 keywords = ["decimal", "math", "finance"]
 categories = ["finance", "mathematics"]
 
-[lints.clippy]
-pedantic = "warn"
-
-# See `clippy.toml`.
-disallowed_methods = "warn"
-arithmetic_side_effects = "warn"
-match_bool = "allow"
-module_name_repetitions = "allow"
-
 [features]
 serde = ["dep:serde"]
 borsh = ["dep:borsh"]

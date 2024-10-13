@@ -2,6 +2,15 @@
 members = ["crates/*"]
 resolver = "2"
 
+[workspace.lints.clippy]
+pedantic = "warn"
+
+# See `clippy.toml`.
+disallowed_methods = "warn"
+arithmetic_side_effects = "warn"
+match_bool = "allow"
+module_name_repetitions = "allow"
+
 [workspace.dependencies]
 criterion = "0.5.1"
 decimal-shared = { path = "./crates/decimal-shared" }
