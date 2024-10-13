@@ -20,12 +20,12 @@ where
 {
     // Use proptest to generate arbitrary input values.
     let mut runner = TestRunner::deterministic();
-    let input = (I::arbitrary(), I::arbitrary());
+    let input = I::arbitrary();
 
     group.bench_function("primitive/to_f64", |bencher| {
         bencher.iter_batched(
             || input.new_tree(&mut runner).unwrap().current(),
-            |(a, b)| black_box(black_box(a) + black_box(b)),
+            |a| black_box(black_box(a).to_f64()),
             BatchSize::SmallInput,
         )
     });

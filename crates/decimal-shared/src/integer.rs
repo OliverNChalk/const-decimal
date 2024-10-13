@@ -5,10 +5,7 @@ use std::str::FromStr;
 
 use num_traits::{CheckedNeg, CheckedRem, ConstOne, ConstZero, One, PrimInt, WrappingAdd};
 
-use crate::cheats::Cheats;
-use crate::full_mul_div::FullMulDiv;
-
-pub trait ScaledInteger<const D: u8>:
+pub trait BasicInteger:
     PrimInt
     + ConstZero
     + ConstOne
@@ -21,12 +18,10 @@ pub trait ScaledInteger<const D: u8>:
     + DivAssign
     + Display
     + FromStr<Err = ParseIntError>
-    + Cheats<D>
-    + FullMulDiv
 {
 }
 
-impl<I, const D: u8> ScaledInteger<D> for I where
+impl<I> BasicInteger for I where
     I: PrimInt
         + ConstZero
         + ConstOne
@@ -39,11 +34,9 @@ impl<I, const D: u8> ScaledInteger<D> for I where
         + DivAssign
         + Display
         + FromStr<Err = ParseIntError>
-        + Cheats<D>
-        + FullMulDiv
 {
 }
 
-pub trait SignedScaledInteger<const D: u8>: ScaledInteger<D> + CheckedNeg {}
+pub trait SignedBasicInteger: BasicInteger + CheckedNeg {}
 
-impl<I, const D: u8> SignedScaledInteger<D> for I where I: ScaledInteger<D> + CheckedNeg {}
+impl<I> SignedBasicInteger for I where I: BasicInteger + CheckedNeg {}

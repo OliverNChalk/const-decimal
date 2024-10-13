@@ -13,7 +13,7 @@ mod foreign_traits;
 /// Full multiplication implementations for underlying integers.
 mod full_mul_div;
 /// Trait definition for underlying integer.
-mod integer;
+mod scaled_integer;
 /// Macros used in tests.
 #[cfg(test)]
 #[macro_use]
@@ -24,4 +24,4 @@ pub(crate) mod algorithms;
 
 pub use aliases::*;
 pub use decimal::*;
-pub use integer::*;
+pub use scaled_integer::*;
