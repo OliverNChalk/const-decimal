@@ -70,8 +70,34 @@ where
         }
     }
 
+    #[inline]
     pub fn is_zero(&self) -> bool {
         self.0 == I::ZERO
+    }
+}
+
+impl<I, const D: u8> num_traits::Zero for Decimal<I, D>
+where
+    I: ScaledInteger<D>,
+{
+    #[inline]
+    fn zero() -> Self {
+        Self(I::zero())
+    }
+
+    #[inline]
+    fn is_zero(&self) -> bool {
+        self.0.is_zero()
+    }
+}
+
+impl<I, const D: u8> num_traits::One for Decimal<I, D>
+where
+    I: ScaledInteger<D>,
+{
+    #[inline]
+    fn one() -> Self {
+        Self(I::one() * <I as crate::cheats::Cheats<D>>::SCALING_FACTOR)
     }
 }
 
@@ -123,12 +149,25 @@ where
     }
 }
 
+impl<I, const D: u8> std::ops::Rem for Decimal<I, D>
+where
+    I: ScaledInteger<D>,
+{
+    type Output = Self;
+
+    #[inline]
+    fn rem(self, rhs: Self) -> Self::Output {
+        Self(self.0 % rhs.0)
+    }
+}
+
 impl<I, const D: u8> Neg for Decimal<I, D>
 where
     I: SignedScaledInteger<D>,
 {
     type Output = Self;
 
+    #[inline]
     fn neg(self) -> Self::Output {
         Decimal(self.0.checked_neg().unwrap())
     }
@@ -189,6 +228,14 @@ mod tests {
     macro_rules! test_basic_ops {
         ($underlying:ty, $decimals:literal) => {
             paste! {
+                #[test]
+                fn [<num_traits_one_ $underlying _ $decimals _add>]() {
+                    use num_traits::One;
+                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(1, 0).unwrap());
+                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(10, 1).unwrap());
+                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(100, 2).unwrap());
+                }
+
                 #[test]
                 fn [<$underlying _ $decimals _add>]() {
                     assert_eq!(

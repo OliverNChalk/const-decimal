@@ -30,3 +30,21 @@ impl_primitive!(u64);
 impl_primitive!(i64);
 impl_primitive!(u128);
 impl_primitive!(i128);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn scaling_factor() {
+        assert_eq!(<i32 as Cheats<0>>::SCALING_FACTOR, 1);
+        assert_eq!(<i32 as Cheats<1>>::SCALING_FACTOR, 10);
+        assert_eq!(<i32 as Cheats<2>>::SCALING_FACTOR, 100);
+        assert_eq!(<i32 as Cheats<3>>::SCALING_FACTOR, 1000);
+
+        assert_eq!(<i64 as Cheats<0>>::SCALING_FACTOR, 1);
+        assert_eq!(<i64 as Cheats<1>>::SCALING_FACTOR, 10);
+        assert_eq!(<i64 as Cheats<2>>::SCALING_FACTOR, 100);
+        assert_eq!(<i64 as Cheats<3>>::SCALING_FACTOR, 1000);
+    }
+}
