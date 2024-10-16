@@ -76,6 +76,31 @@ where
     }
 }
 
+impl<I, const D: u8> num_traits::Zero for Decimal<I, D>
+where
+    I: ScaledInteger<D>,
+{
+    #[inline]
+    fn zero() -> Self {
+        Self(I::zero())
+    }
+
+    #[inline]
+    fn is_zero(&self) -> bool {
+        self.0.is_zero()
+    }
+}
+
+impl<I, const D: u8> num_traits::One for Decimal<I, D>
+where
+    I: ScaledInteger<D>,
+{
+    #[inline]
+    fn one() -> Self {
+        Self(I::one() * <I as crate::cheats::Cheats<D>>::SCALING_FACTOR)
+    }
+}
+
 impl<I, const D: u8> Add for Decimal<I, D>
 where
     I: ScaledInteger<D>,
@@ -121,6 +146,18 @@ where
     #[inline]
     fn div(self, rhs: Self) -> Self::Output {
         Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0))
+    }
+}
+
+impl<I, const D: u8> std::ops::Rem for Decimal<I, D>
+where
+    I: ScaledInteger<D>,
+{
+    type Output = Self;
+
+    #[inline]
+    fn rem(self, rhs: Self) -> Self::Output {
+        Self(self.0 % rhs.0)
     }
 }
 
@@ -173,43 +210,6 @@ where
     #[inline]
     fn div_assign(&mut self, rhs: Self) {
         *self = Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0));
-    }
-}
-
-impl<I, const D: u8> std::ops::Rem for Decimal<I, D>
-where
-    I: ScaledInteger<D>,
-{
-    type Output = Self;
-
-    #[inline]
-    fn rem(self, rhs: Self) -> Self::Output {
-        Self(self.0 % rhs.0)
-    }
-}
-
-impl<I, const D: u8> num_traits::Zero for Decimal<I, D>
-where
-    I: ScaledInteger<D>,
-{
-    #[inline]
-    fn zero() -> Self {
-        Self(I::zero())
-    }
-
-    #[inline]
-    fn is_zero(&self) -> bool {
-        self.0.is_zero()
-    }
-}
-
-impl<I, const D: u8> num_traits::One for Decimal<I, D>
-where
-    I: ScaledInteger<D>,
-{
-    #[inline]
-    fn one() -> Self {
-        Self(I::one() * <I as crate::cheats::Cheats<D>>::SCALING_FACTOR)
     }
 }
 
