@@ -699,4 +699,19 @@ mod tests {
     crate::macros::apply_to_common_variants!(test_basic_ops);
     crate::macros::apply_to_common_variants!(fuzz_against_primitive);
     crate::macros::apply_to_common_variants!(differential_fuzz);
+
+    macro_rules! num_traits_one_check{
+        ($underlying:ty, $decimals:literal) => {
+            paste! {
+                #[test]
+                fn [<num_traits_one_ $underlying _ $decimals _add>]() {
+                    use num_traits::One;
+                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(1, 0).unwrap());
+                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(10, 1).unwrap());
+                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(100, 2).unwrap());
+                }
+            }
+        };
+    }
+    crate::macros::apply_to_common_variants!(num_traits_one_check);
 }
