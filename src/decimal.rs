@@ -111,6 +111,7 @@ where
         if radix != 10 {
             return Err(ParseDecimalError::RadixMustBe10)
         }
+
         <Self as std::str::FromStr>::from_str(str)
     }
 }
