@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-use crate::integer::{ScaledInteger, SignedScaledInteger};
+use crate::{display::ParseDecimalError, integer::{ScaledInteger, SignedScaledInteger}};
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "borsh", derive(borsh::BorshSerialize, borsh::BorshDeserialize))]
@@ -105,10 +105,13 @@ impl<I, const D: u8> num_traits::Num for Decimal<I, D>
 where
     I: SignedScaledInteger<D>,
 {
-    type FromStrRadixErr = &'static str;
+    type FromStrRadixErr = ParseDecimalError<I>;
 
     fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
-        Ok(Self(I::from_str_radix(str, radix).map_err(|_| "Cannot parse from str")?))
+        if radix != 10 {
+            return Err(ParseDecimalError::RadixMustBe10)
+        }
+        <Self as std::str::FromStr>::from_str(str)
     }
 }
 
