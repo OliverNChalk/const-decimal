@@ -23,6 +23,5 @@ pub(crate) mod macros;
 pub(crate) mod algorithms;
 
 pub use aliases::*;
-pub use cheats::Cheats;
 pub use decimal::*;
 pub use integer::*;
