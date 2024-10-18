@@ -39,6 +39,7 @@ criterion = "0.5.1"
 expect-test = "1.5.0"
 malachite = "0.4.16"
 proptest = "1.5.0"
+fpdec = "0.11.0"
 
 [profile.release]
 opt-level = 3
@@ -58,4 +59,9 @@ incremental = false
 [[bench]]
 name = "main"
 path = "benches/main.rs"
+harness = false
+
+[[bench]]
+name = "vs_fpdec"
+path = "benches/vs_fpdec.rs"
 harness = false
