@@ -1,6 +1,8 @@
 use std::cmp::Ordering;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::str::FromStr;
 
+use crate::display::ParseDecimalError;
 use crate::integer::{ScaledInteger, SignedScaledInteger};
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -97,7 +99,47 @@ where
 {
     #[inline]
     fn one() -> Self {
-        Self(I::one() * <I as crate::cheats::Cheats<D>>::SCALING_FACTOR)
+        Self(I::SCALING_FACTOR)
+    }
+}
+
+impl<I, const D: u8> num_traits::Num for Decimal<I, D>
+where
+    I: SignedScaledInteger<D>,
+{
+    type FromStrRadixErr = ParseDecimalError<I>;
+
+    fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
+        if radix != 10 {
+            return Err(ParseDecimalError::RadixMustBe10);
+        }
+
+        Self::from_str(str)
+    }
+}
+
+impl<I, const D: u8> num_traits::Signed for Decimal<I, D>
+where
+    I: SignedScaledInteger<D>,
+{
+    fn abs(&self) -> Self {
+        Self(self.0.abs())
+    }
+
+    fn abs_sub(&self, other: &Self) -> Self {
+        Self(self.0.abs_sub(&other.0))
+    }
+
+    fn signum(&self) -> Self {
+        Self(self.0.signum())
+    }
+
+    fn is_positive(&self) -> bool {
+        self.0.is_positive()
+    }
+
+    fn is_negative(&self) -> bool {
+        self.0.is_negative()
     }
 }
 
@@ -157,7 +199,7 @@ where
 
     #[inline]
     fn rem(self, rhs: Self) -> Self::Output {
-        Self(self.0 % rhs.0)
+        Self(self.0.checked_rem(&rhs.0).unwrap())
     }
 }
 
@@ -231,9 +273,18 @@ mod tests {
                 #[test]
                 fn [<num_traits_one_ $underlying _ $decimals _add>]() {
                     use num_traits::One;
-                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(1, 0).unwrap());
-                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(10, 1).unwrap());
-                    assert_eq!(Decimal::<$underlying, $decimals>::one(), Decimal::try_from_scaled(100, 2).unwrap());
+                    assert_eq!(
+                        Decimal::<$underlying, $decimals>::one(),
+                        Decimal::try_from_scaled(1, 0).unwrap(),
+                    );
+                    assert_eq!(
+                        Decimal::<$underlying, $decimals>::one(),
+                        Decimal::try_from_scaled(10, 1).unwrap(),
+                    );
+                    assert_eq!(
+                        Decimal::<$underlying, $decimals>::one(),
+                        Decimal::try_from_scaled(100, 2).unwrap(),
+                    );
                 }
 
                 #[test]

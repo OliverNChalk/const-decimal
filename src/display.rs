@@ -94,6 +94,8 @@ where
     ParseInt(#[from] ParseIntError),
     #[error("Could not parse without precision loss; decimals={0}")]
     PrecisionLoss(usize),
+    #[error("The radix must be 10 in `from_str_radix`")]
+    RadixMustBe10,
 }
 
 #[cfg(test)]
