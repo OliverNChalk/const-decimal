@@ -101,6 +101,42 @@ where
     }
 }
 
+impl<I, const D: u8> num_traits::Num for Decimal<I, D> 
+where
+    I: SignedScaledInteger<D>,
+{
+    type FromStrRadixErr = &'static str;
+
+    fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
+        Ok(Self(I::from_str_radix(str, radix).map_err(|_| "Cannot parse from str")?))
+    }
+}
+
+impl<I, const D: u8> num_traits::Signed for Decimal<I, D> 
+where
+    I: SignedScaledInteger<D>,
+{
+    fn abs(&self) -> Self {
+        Self(self.0.abs())
+    }
+
+    fn abs_sub(&self, other: &Self) -> Self {
+        Self(self.0.abs_sub(&other.0))
+    }
+
+    fn signum(&self) -> Self {
+        Self(self.0.signum())
+    }
+
+    fn is_positive(&self) -> bool {
+        self.0.is_positive()
+    }
+
+    fn is_negative(&self) -> bool {
+        self.0.is_negative()
+    }
+}
+
 impl<I, const D: u8> Add for Decimal<I, D>
 where
     I: ScaledInteger<D>,

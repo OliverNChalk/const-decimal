@@ -44,6 +44,12 @@ impl<I, const D: u8> ScaledInteger<D> for I where
 {
 }
 
-pub trait SignedScaledInteger<const D: u8>: ScaledInteger<D> + CheckedNeg {}
+pub trait SignedScaledInteger<const D: u8>:
+    ScaledInteger<D> + CheckedNeg + num_traits::Signed
+{
+}
 
-impl<I, const D: u8> SignedScaledInteger<D> for I where I: ScaledInteger<D> + CheckedNeg {}
+impl<I, const D: u8> SignedScaledInteger<D> for I where
+    I: ScaledInteger<D> + CheckedNeg + num_traits::Signed
+{
+}
