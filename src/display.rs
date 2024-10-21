@@ -45,7 +45,8 @@ where
 
         // Parse the unsigned representation.
         let Some((integer_s, fractional_s)) = unsigned_s.split_once('.') else {
-            // The number does not contain a decimal point, but we can still try and parse it as an integer.
+            // The number does not contain a decimal point, but we can still try and parse
+            // it as an integer.
             let integer = I::from_str(s)?;
             return Decimal::try_from_scaled(integer, 0)
                 .ok_or(ParseDecimalError::Overflow(integer, I::ZERO));
