@@ -24,4 +24,5 @@ pub(crate) mod algorithms;
 
 pub use aliases::*;
 pub use decimal::*;
+pub use display::ParseDecimalError;
 pub use integer::*;
