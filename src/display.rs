@@ -39,6 +39,7 @@ where
         if s.is_empty() {
             return Err(ParseDecimalError::EmptyString);
         }
+
         // Strip the sign (-0 would parse to 0 and break our output).
         let unsigned_s = s.strip_prefix('-').unwrap_or(s);
 
