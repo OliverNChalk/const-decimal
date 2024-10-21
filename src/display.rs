@@ -36,13 +36,19 @@ where
     type Err = ParseDecimalError<I>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.is_empty() {
+            return Err(ParseDecimalError::EmptyString);
+        }
         // Strip the sign (-0 would parse to 0 and break our output).
         let unsigned_s = s.strip_prefix('-').unwrap_or(s);
 
         // Parse the unsigned representation.
-        let (integer_s, fractional_s) = unsigned_s
-            .split_once('.')
-            .ok_or(ParseDecimalError::MissingDecimalPoint)?;
+        let Some((integer_s, fractional_s)) = unsigned_s.split_once('.') else {
+            // The number does not contain a decimal point, but we can still try and parse it as an integer.
+            let integer = I::from_str(s)?;
+            return Decimal::try_from_scaled(integer, 0)
+                .ok_or(ParseDecimalError::Overflow(integer, I::ZERO));
+        };
         let integer = I::from_str(integer_s)?;
         let fractional = I::from_str(fractional_s)?;
 
@@ -86,6 +92,8 @@ pub enum ParseDecimalError<I>
 where
     I: Display,
 {
+    #[error("Empty string provided")]
+    EmptyString,
     #[error("Missing decimal point")]
     MissingDecimalPoint,
     #[error("Resultant decimal overflowed; integer={0}; fractional={1}")]
@@ -120,7 +128,7 @@ mod tests {
 
     #[test]
     fn uint64_9_from_str() {
-        assert_eq!("".parse::<Uint64_9>(), Err(ParseDecimalError::MissingDecimalPoint));
+        assert_eq!("".parse::<Uint64_9>(), Err(ParseDecimalError::EmptyString));
         expect![[r#"
             Err(
                 ParseInt(
@@ -132,6 +140,8 @@ mod tests {
         "#]]
         .assert_debug_eq(&"1.".parse::<Uint64_9>());
         assert_eq!("1.0".parse::<Uint64_9>(), Ok(Uint64_9::ONE));
+        assert_eq!("10.0".parse::<Uint64_9>(), Ok(Uint64_9::try_from_scaled(10, 0).unwrap()));
+        assert_eq!("10".parse::<Uint64_9>(), Ok(Uint64_9::try_from_scaled(10, 0).unwrap()));
         assert_eq!("0.1".parse::<Uint64_9>(), Ok(Decimal(10u64.pow(8))));
         assert_eq!("0.123456789".parse::<Uint64_9>(), Ok(Decimal(123456789)));
         assert_eq!("0.012345678".parse::<Uint64_9>(), Ok(Decimal(12345678)));
@@ -172,7 +182,7 @@ mod tests {
 
     #[test]
     fn int64_9_from_str() {
-        assert_eq!("".parse::<Int64_9>(), Err(ParseDecimalError::MissingDecimalPoint));
+        assert_eq!("".parse::<Int64_9>(), Err(ParseDecimalError::EmptyString));
         expect![[r#"
             Err(
                 ParseInt(
@@ -190,6 +200,8 @@ mod tests {
         assert_eq!("0.000000001".parse::<Int64_9>(), Ok(Decimal(1)));
         assert_eq!("0.0000000001".parse::<Int64_9>(), Err(ParseDecimalError::PrecisionLoss(10)));
         assert_eq!("-1.0".parse::<Int64_9>(), Ok(-Int64_9::ONE));
+        assert_eq!("-10.0".parse::<Int64_9>(), Ok(Int64_9::try_from_scaled(-10, 0).unwrap()));
+        assert_eq!("-10".parse::<Int64_9>(), Ok(Int64_9::try_from_scaled(-10, 0).unwrap()));
         assert_eq!("-0.1".parse::<Int64_9>(), Ok(-Decimal(10i64.pow(8))));
         assert_eq!("-0.123456789".parse::<Int64_9>(), Ok(-Decimal(123456789)));
         assert_eq!("-0.012345678".parse::<Int64_9>(), Ok(-Decimal(12345678)));
