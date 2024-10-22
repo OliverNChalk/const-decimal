@@ -76,6 +76,31 @@ where
     pub fn is_zero(&self) -> bool {
         self.0 == I::ZERO
     }
+
+    /// Round a number to a multiple of a given `quantum` toward zero.
+    /// general ref: <https://en.wikipedia.org/wiki/Quantization_(signal_processing)>
+    ///
+    /// By default, rust is rounding towards zero and so does this method.
+    ///
+    /// # Example:
+    /// ```rust
+    /// use const_decimal::Decimal;
+    /// // 11.65
+    /// let d = Decimal::<i64, 5>::try_from_scaled(1165, 2).unwrap();
+    /// // Allow only increments of 0.5
+    /// let quantum = Decimal::<i64, 5>::try_from_scaled(5, 1).unwrap();
+    /// let q = d.quantize_toward_zero(quantum);
+    /// // 11.5 rounded down to the nearest `quantum`.
+    /// assert_eq!(q, Decimal::try_from_scaled(115, 1).unwrap());
+    /// ```
+    #[inline]
+    #[must_use]
+    pub fn quantize_toward_zero(&self, quantum: Self) -> Self {
+        // SAFETY: We know the multiplication cannot overflow as we previously divided
+        // by the same number (and rust is rounding towards zero by default).
+        #[allow(clippy::arithmetic_side_effects)]
+        Self((self.0 / quantum.0) * quantum.0)
+    }
 }
 
 impl<I, const D: u8> num_traits::Zero for Decimal<I, D>
@@ -270,6 +295,34 @@ mod tests {
     macro_rules! test_basic_ops {
         ($underlying:ty, $decimals:literal) => {
             paste! {
+                #[test]
+                fn [<$underlying _ $decimals _quantize_toward_zero_0>]() {
+                    let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(5, 1).unwrap();
+
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
+
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(45, 1).unwrap());
+
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(40, 1).unwrap());
+                }
+
+                #[test]
+                fn [<$underlying _ $decimals _quantize_down_1>]() {
+                    let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(2, 1).unwrap();
+
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
+
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(48, 1).unwrap());
+
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(44, 1).unwrap());
+                }
+
                 #[test]
                 fn [<num_traits_one_ $underlying _ $decimals _add>]() {
                     use num_traits::One;
