@@ -296,34 +296,6 @@ mod tests {
         ($underlying:ty, $decimals:literal) => {
             paste! {
                 #[test]
-                fn [<$underlying _ $decimals _quantize_toward_zero_0>]() {
-                    let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(5, 1).unwrap();
-
-                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
-
-                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(45, 1).unwrap());
-
-                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(40, 1).unwrap());
-                }
-
-                #[test]
-                fn [<$underlying _ $decimals _quantize_down_1>]() {
-                    let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(2, 1).unwrap();
-
-                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
-
-                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(48, 1).unwrap());
-
-                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(44, 1).unwrap());
-                }
-
-                #[test]
                 fn [<num_traits_one_ $underlying _ $decimals _add>]() {
                     use num_traits::One;
                     assert_eq!(
@@ -434,6 +406,29 @@ mod tests {
                     out /= Decimal::TWO;
 
                     assert_eq!(out, Decimal::ONE / Decimal::TWO);
+                }
+
+                #[test]
+                fn [<$underlying _ $decimals _quantize_toward_zero_0>]() {
+                    let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(5, 1).unwrap();
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(45, 1).unwrap());
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(40, 1).unwrap());
+
+                    let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(2, 1).unwrap();
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(48, 1).unwrap());
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(44, 1).unwrap());
+
+                    let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(4, 1).unwrap();
+                    let original = Decimal::<$underlying, $decimals>::try_from_scaled(123, 1).unwrap();
+                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(120, 1).unwrap());
                 }
             }
         };
