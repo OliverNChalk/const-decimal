@@ -89,13 +89,13 @@ where
     /// let d = Decimal::<i64, 5>::try_from_scaled(1165, 2).unwrap();
     /// // Allow only increments of 0.5
     /// let quantum = Decimal::<i64, 5>::try_from_scaled(5, 1).unwrap();
-    /// let q = d.quantize_toward_zero(quantum);
+    /// let q = d.quantize_round_to_zero(quantum);
     /// // 11.5 rounded down to the nearest `quantum`.
     /// assert_eq!(q, Decimal::try_from_scaled(115, 1).unwrap());
     /// ```
     #[inline]
     #[must_use]
-    pub fn quantize_toward_zero(&self, quantum: Self) -> Self {
+    pub fn quantize_round_to_zero(&self, quantum: Self) -> Self {
         // SAFETY: We know the multiplication cannot overflow as we previously divided
         // by the same number (and rust is rounding towards zero by default).
         #[allow(clippy::arithmetic_side_effects)]
@@ -412,23 +412,23 @@ mod tests {
                 fn [<$underlying _ $decimals _quantize_toward_zero_0>]() {
                     let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(5, 1).unwrap();
                     let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
+                    assert_eq!(original.quantize_round_to_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
                     let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(45, 1).unwrap());
+                    assert_eq!(original.quantize_round_to_zero(quantum), Decimal::try_from_scaled(45, 1).unwrap());
                     let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(40, 1).unwrap());
+                    assert_eq!(original.quantize_round_to_zero(quantum), Decimal::try_from_scaled(40, 1).unwrap());
 
                     let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(2, 1).unwrap();
                     let original = Decimal::<$underlying, $decimals>::try_from_scaled(61, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
+                    assert_eq!(original.quantize_round_to_zero(quantum), Decimal::try_from_scaled(60, 1).unwrap());
                     let original = Decimal::<$underlying, $decimals>::try_from_scaled(49, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(48, 1).unwrap());
+                    assert_eq!(original.quantize_round_to_zero(quantum), Decimal::try_from_scaled(48, 1).unwrap());
                     let original = Decimal::<$underlying, $decimals>::try_from_scaled(44, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(44, 1).unwrap());
+                    assert_eq!(original.quantize_round_to_zero(quantum), Decimal::try_from_scaled(44, 1).unwrap());
 
                     let quantum = Decimal::<$underlying, $decimals>::try_from_scaled(4, 1).unwrap();
                     let original = Decimal::<$underlying, $decimals>::try_from_scaled(123, 1).unwrap();
-                    assert_eq!(original.quantize_toward_zero(quantum), Decimal::try_from_scaled(120, 1).unwrap());
+                    assert_eq!(original.quantize_round_to_zero(quantum), Decimal::try_from_scaled(120, 1).unwrap());
                 }
             }
         };
