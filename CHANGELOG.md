@@ -4,6 +4,11 @@ All notable changes to `const-decimal`.
 
 ## Unreleased
 
+- Add `fpdec_comparison` benchmark.
+- Parse strings without a decimal point.
+- Add `quantize_round_to_zero`.
+- Impl `num_traits::Zero`, `num_traits::One`, and `std::ops::Rem`.
+
 ## 0.3.0
 
 - BREAKING: Remove `from_scaled` in favor of `try_from_scaled`.
