@@ -11,13 +11,17 @@ macro_rules! impl_primitive {
     ($primary:ty, $intermediate:ty) => {
         impl FullMulDiv for $primary {
             fn full_mul_div(self, rhs: Self, div: Self) -> Self {
+                debug_assert_ne!(div, <Self as num_traits::Zero>::zero(), "Cannot divide by zero");
                 let numer = (<$intermediate>::from(self))
                     .checked_mul(<$intermediate>::from(rhs))
-                    .unwrap();
+                    .expect("Can multiply in intermediary datatype");
                 let denom = <$intermediate>::from(div);
-                let out = numer.checked_div(denom).unwrap();
+                let out = numer
+                    .checked_div(denom)
+                    .expect("Can divide in intermediary datatype");
 
-                out.try_into().unwrap()
+                out.try_into()
+                    .expect("Can convert back into original datatype from intermediary.")
             }
         }
     };
