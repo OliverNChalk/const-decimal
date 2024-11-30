@@ -13,11 +13,14 @@ macro_rules! impl_primitive {
             fn full_mul_div(self, rhs: Self, div: Self) -> Self {
                 let numer = (<$intermediate>::from(self))
                     .checked_mul(<$intermediate>::from(rhs))
-                    .unwrap();
+                    .unwrap_or_else(|| panic!("Mul overflowed; lhs={self}; rhs={rhs}"));
                 let denom = <$intermediate>::from(div);
-                let out = numer.checked_div(denom).unwrap();
+                let out = numer
+                    .checked_div(denom)
+                    .unwrap_or_else(|| panic!("Division by zero; numer={numer}; denom={denom}"));
 
-                out.try_into().unwrap()
+                out.try_into()
+                    .unwrap_or_else(|err| panic!("Cast failed; err={err}"))
             }
         }
     };
