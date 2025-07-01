@@ -28,6 +28,11 @@ where
     pub fn to_f64(&self) -> f64 {
         self.0.to_f64().unwrap() / I::SCALING_FACTOR.to_f64().unwrap()
     }
+
+    #[allow(clippy::missing_panics_doc)]
+    pub fn to_f32(&self) -> f32 {
+        self.0.to_f32().unwrap() / I::SCALING_FACTOR.to_f32().unwrap()
+    }
 }
 
 #[cfg(test)]
