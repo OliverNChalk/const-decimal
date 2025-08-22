@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 use std::str::FromStr;
 
+use crate::cheats::Cheats;
 use crate::display::ParseDecimalError;
 use crate::integer::{ScaledInteger, SignedScaledInteger};
 
@@ -192,27 +193,27 @@ where
     }
 }
 
-impl<I, const D: u8> Mul for Decimal<I, D>
+impl<I, const D: u8, const D_RHS: u8> Mul<Decimal<I, D_RHS>> for Decimal<I, D>
 where
-    I: ScaledInteger<D>,
+    I: ScaledInteger<D> + ScaledInteger<D_RHS>,
 {
-    type Output = Self;
+    type Output = Decimal<I, D>;
 
     #[inline]
-    fn mul(self, rhs: Self) -> Self::Output {
-        Decimal(I::full_mul_div(self.0, rhs.0, I::SCALING_FACTOR))
+    fn mul(self, rhs: Decimal<I, D_RHS>) -> Self::Output {
+        Decimal(I::full_mul_div(self.0, rhs.0, <I as Cheats<D_RHS>>::SCALING_FACTOR))
     }
 }
 
-impl<I, const D: u8> Div for Decimal<I, D>
+impl<I, const D: u8, const D_RHS: u8> Div<Decimal<I, D_RHS>> for Decimal<I, D>
 where
-    I: ScaledInteger<D>,
+    I: ScaledInteger<D> + ScaledInteger<D_RHS>,
 {
     type Output = Self;
 
     #[inline]
-    fn div(self, rhs: Self) -> Self::Output {
-        Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0))
+    fn div(self, rhs: Decimal<I, D_RHS>) -> Self::Output {
+        Decimal(I::full_mul_div(self.0, <I as Cheats<D_RHS>>::SCALING_FACTOR, rhs.0))
     }
 }
 
@@ -260,23 +261,23 @@ where
     }
 }
 
-impl<I, const D: u8> MulAssign for Decimal<I, D>
+impl<I, const D: u8, const D_RHS: u8> MulAssign<Decimal<I, D_RHS>> for Decimal<I, D>
 where
-    I: ScaledInteger<D>,
+    I: ScaledInteger<D> + ScaledInteger<D_RHS>,
 {
     #[inline]
-    fn mul_assign(&mut self, rhs: Self) {
-        *self = Decimal(I::full_mul_div(self.0, rhs.0, I::SCALING_FACTOR));
+    fn mul_assign(&mut self, rhs: Decimal<I, D_RHS>) {
+        *self = Decimal(I::full_mul_div(self.0, rhs.0, <I as Cheats<D_RHS>>::SCALING_FACTOR));
     }
 }
 
-impl<I, const D: u8> DivAssign for Decimal<I, D>
+impl<I, const D: u8, const D_RHS: u8> DivAssign<Decimal<I, D_RHS>> for Decimal<I, D>
 where
-    I: ScaledInteger<D>,
+    I: ScaledInteger<D> + ScaledInteger<D_RHS>,
 {
     #[inline]
-    fn div_assign(&mut self, rhs: Self) {
-        *self = Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0));
+    fn div_assign(&mut self, rhs: Decimal<I, D_RHS>) {
+        *self = Decimal(I::full_mul_div(self.0, <I as Cheats<D_RHS>>::SCALING_FACTOR, rhs.0));
     }
 }
 
@@ -331,7 +332,7 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _mul>]() {
                     assert_eq!(
-                        Decimal::<$underlying, $decimals>::ONE * Decimal::ONE,
+                        Decimal::<$underlying, $decimals>::ONE * Decimal::<$underlying, $decimals>::ONE,
                         Decimal::ONE,
                     );
                 }
@@ -339,7 +340,7 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _div>]() {
                     assert_eq!(
-                        Decimal::<$underlying, $decimals>::ONE / Decimal::ONE,
+                        Decimal::<$underlying, $decimals>::ONE / Decimal::<$underlying, $decimals>::ONE,
                         Decimal::ONE,
                     );
                 }
@@ -347,7 +348,7 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _mul_min_by_one>]() {
                     assert_eq!(
-                        Decimal::min() * Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::min() * Decimal::<$underlying, $decimals>::ONE,
                         Decimal::min()
                     );
                 }
@@ -355,7 +356,7 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _div_min_by_one>]() {
                     assert_eq!(
-                        Decimal::min() / Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::min() / Decimal::<$underlying, $decimals>::ONE,
                         Decimal::min()
                     );
                 }
@@ -363,7 +364,7 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _mul_max_by_one>]() {
                     assert_eq!(
-                        Decimal::max() * Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::max() * Decimal::<$underlying, $decimals>::ONE,
                         Decimal::max(),
                     );
                 }
@@ -371,7 +372,7 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _div_max_by_one>]() {
                     assert_eq!(
-                        Decimal::max() / Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::max() / Decimal::<$underlying, $decimals>::ONE,
                         Decimal::max(),
                     );
                 }
@@ -395,7 +396,7 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _mul_assign>]() {
                     let mut out = Decimal::<$underlying, $decimals>::ONE;
-                    out *= Decimal::TWO;
+                    out *= Decimal::<$underlying, $decimals>::TWO;
 
                     assert_eq!(out, Decimal::ONE + Decimal::ONE);
                 }
@@ -403,9 +404,9 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _div_assign>]() {
                     let mut out = Decimal::<$underlying, $decimals>::ONE;
-                    out /= Decimal::TWO;
+                    out /= Decimal::<$underlying, $decimals>::TWO;
 
-                    assert_eq!(out, Decimal::ONE / Decimal::TWO);
+                    assert_eq!(out, Decimal::ONE / Decimal::<$underlying, $decimals>::TWO);
                 }
 
                 #[test]
@@ -515,7 +516,7 @@ mod tests {
                             ..($primitive::MAX.shr($primitive::BITS / 2)),
                     ) {
                         let decimal = std::panic::catch_unwind(
-                            || Decimal::<_, $decimals>(x) * Decimal(y)
+                            || Decimal::<_, $decimals>(x) * Decimal::<_, $decimals>(y)
                         );
                         let primitive = std::panic::catch_unwind(
                             || x
@@ -543,7 +544,7 @@ mod tests {
                             ..($primitive::MAX / $primitive::pow(10, $decimals)),
                     ) {
                         let decimal = std::panic::catch_unwind(
-                            || Decimal::<_, $decimals>(x) / Decimal(y)
+                            || Decimal::<_, $decimals>(x) / Decimal::<_, $decimals>(y)
                         );
                         let primitive = std::panic::catch_unwind(
                             || x
