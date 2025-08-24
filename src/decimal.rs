@@ -18,19 +18,19 @@ where
     pub const ZERO: Decimal<I, D> = Decimal(I::ZERO);
     pub const ONE: Decimal<I, D> = Decimal(I::SCALING_FACTOR);
     pub const TWO: Decimal<I, D> = Decimal(I::TWO_SCALING_FACTOR);
+    pub const MIN: Decimal<I, D> = Decimal(I::MIN);
+    pub const MAX: Decimal<I, D> = Decimal(I::MAX);
     pub const DECIMALS: u8 = D;
     pub const SCALING_FACTOR: I = I::SCALING_FACTOR;
 
-    // TODO: See if we can generate a constant.
-    #[must_use]
-    pub fn min() -> Self {
-        Decimal(I::min_value())
+    #[deprecated(note = "use Self::MIN")]
+    pub const fn min() -> Self {
+        Self::MIN
     }
 
-    // TODO: See if we can generate a constant.
-    #[must_use]
-    pub fn max() -> Self {
-        Decimal(I::max_value())
+    #[deprecated(note = "use Self::MAX")]
+    pub const fn max() -> Self {
+        Self::MAX
     }
 
     /// Losslessly converts a scaled integer to this type.
@@ -347,32 +347,32 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _mul_min_by_one>]() {
                     assert_eq!(
-                        Decimal::min() * Decimal::<$underlying, $decimals>::ONE,
-                        Decimal::min()
+                        Decimal::<$underlying, $decimals>::MIN * Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::MIN
                     );
                 }
 
                 #[test]
                 fn [<$underlying _ $decimals _div_min_by_one>]() {
                     assert_eq!(
-                        Decimal::min() / Decimal::<$underlying, $decimals>::ONE,
-                        Decimal::min()
+                        Decimal::<$underlying, $decimals>::MIN / Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::MIN
                     );
                 }
 
                 #[test]
                 fn [<$underlying _ $decimals _mul_max_by_one>]() {
                     assert_eq!(
-                        Decimal::max() * Decimal::<$underlying, $decimals>::ONE,
-                        Decimal::max(),
+                        Decimal::<$underlying, $decimals>::MAX * Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::MAX,
                     );
                 }
 
                 #[test]
                 fn [<$underlying _ $decimals _div_max_by_one>]() {
                     assert_eq!(
-                        Decimal::max() / Decimal::<$underlying, $decimals>::ONE,
-                        Decimal::max(),
+                        Decimal::<$underlying, $decimals>::MAX / Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::MAX,
                     );
                 }
 

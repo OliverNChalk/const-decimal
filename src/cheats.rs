@@ -1,6 +1,8 @@
 use paste::paste;
 
 pub trait Cheats<const D: u8> {
+    const MIN: Self;
+    const MAX: Self;
     const TWO: Self;
     const TEN: Self;
     const SCALING_FACTOR: Self;
@@ -10,6 +12,8 @@ pub trait Cheats<const D: u8> {
 macro_rules! impl_primitive {
     ($primitive:tt) => {
         impl<const D: u8> Cheats<D> for $primitive {
+            const MIN: Self = Self::MIN;
+            const MAX: Self = Self::MAX;
             const TWO: Self = 2;
             const TEN: Self = 10;
             paste! {

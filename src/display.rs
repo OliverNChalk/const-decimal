@@ -159,7 +159,7 @@ mod tests {
             format!("{}.0", u64::MAX / Uint64_9::SCALING_FACTOR).parse::<Uint64_9>(),
             Ok(Decimal(u64::MAX / Uint64_9::SCALING_FACTOR * Uint64_9::SCALING_FACTOR))
         );
-        assert_eq!(format!("18446744073.709551615").parse::<Uint64_9>(), Ok(Decimal::max()),);
+        assert_eq!(format!("18446744073.709551615").parse::<Uint64_9>(), Ok(Decimal::MAX));
         assert_eq!(
             format!("18446744073.709551616").parse::<Uint64_9>(),
             Err(ParseDecimalError::Overflow(18446744073, 709551616)),
