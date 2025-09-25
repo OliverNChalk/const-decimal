@@ -27,7 +27,7 @@ where
             || input.new_tree(&mut runner).unwrap().current(),
             |(a, b)| black_box(black_box(a) - black_box(b)),
             BatchSize::SmallInput,
-        )
+        );
     });
 }
 
@@ -52,6 +52,6 @@ where
             },
             |(a, b)| black_box(black_box(a) - black_box(b)),
             BatchSize::SmallInput,
-        )
+        );
     });
 }

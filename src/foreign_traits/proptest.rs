@@ -16,7 +16,7 @@ where
         Self::arbitrary_with(())
     }
 
-    fn arbitrary_with(_: Self::Parameters) -> Self::Strategy {
+    fn arbitrary_with((): Self::Parameters) -> Self::Strategy {
         any::<I>().prop_map(|integer| Decimal(integer))
     }
 }

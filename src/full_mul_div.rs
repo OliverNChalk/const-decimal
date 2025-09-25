@@ -108,10 +108,9 @@ mod tests {
             let reference = Integer::from(a) * Integer::from(b) / Integer::from(div);
 
             // If the output fits in a u128 then ours should match.
-            match u128::try_from(&reference) {
-                Ok(reference) => assert_eq!(u128::full_mul_div(a, b, div), reference),
-                Err(_) => {}
-            };
+            if let Ok(reference) = u128::try_from(&reference) {
+                assert_eq!(u128::full_mul_div(a, b, div), reference);
+            }
         });
     }
 
@@ -126,10 +125,9 @@ mod tests {
             let reference = Integer::from(a) * Integer::from(b) / Integer::from(div);
 
             // If the output fits in an i128 then ours should match.
-            match i128::try_from(&reference) {
-                Ok(reference) => assert_eq!(i128::full_mul_div(a, b, div), reference),
-                Err(_) => {}
-            };
+            if let Ok(reference) = i128::try_from(&reference) {
+                assert_eq!(i128::full_mul_div(a, b, div), reference);
+            }
         });
     }
 }

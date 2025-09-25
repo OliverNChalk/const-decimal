@@ -32,12 +32,12 @@ fn primitive_mul<I>(
     let mut runner = TestRunner::deterministic();
     let input = (strategy.clone(), strategy);
 
-    group.bench_function(&format!("primitive/mul/{strategy_label}"), |bencher| {
+    group.bench_function(format!("primitive/mul/{strategy_label}"), |bencher| {
         bencher.iter_batched(
             || input.new_tree(&mut runner).unwrap().current(),
             |(a, b)| black_box(black_box(a) * black_box(b)),
             BatchSize::SmallInput,
-        )
+        );
     });
 }
 
@@ -58,6 +58,6 @@ fn decimal_mul<const D: u8, I>(
             || input.new_tree(&mut runner).unwrap().current(),
             |(a, b)| black_box(black_box(a) * black_box(b)),
             BatchSize::SmallInput,
-        )
+        );
     });
 }

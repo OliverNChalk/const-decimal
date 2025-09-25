@@ -146,8 +146,8 @@ mod tests {
         assert_eq!("10.0".parse::<Uint64_9>(), Ok(Uint64_9::try_from_scaled(10, 0).unwrap()));
         assert_eq!("10".parse::<Uint64_9>(), Ok(Uint64_9::try_from_scaled(10, 0).unwrap()));
         assert_eq!("0.1".parse::<Uint64_9>(), Ok(Decimal(10u64.pow(8))));
-        assert_eq!("0.123456789".parse::<Uint64_9>(), Ok(Decimal(123456789)));
-        assert_eq!("0.012345678".parse::<Uint64_9>(), Ok(Decimal(12345678)));
+        assert_eq!("0.123456789".parse::<Uint64_9>(), Ok(Decimal(123_456_789)));
+        assert_eq!("0.012345678".parse::<Uint64_9>(), Ok(Decimal(12_345_678)));
         assert_eq!("0.000000001".parse::<Uint64_9>(), Ok(Decimal(1)));
 
         assert_eq!("0.0000000001".parse::<Uint64_9>(), Err(ParseDecimalError::PrecisionLoss(10)));
@@ -159,10 +159,10 @@ mod tests {
             format!("{}.0", u64::MAX / Uint64_9::SCALING_FACTOR).parse::<Uint64_9>(),
             Ok(Decimal(u64::MAX / Uint64_9::SCALING_FACTOR * Uint64_9::SCALING_FACTOR))
         );
-        assert_eq!(format!("18446744073.709551615").parse::<Uint64_9>(), Ok(Decimal::MAX));
+        assert_eq!("18446744073.709551615".to_string().parse::<Uint64_9>(), Ok(Decimal::MAX));
         assert_eq!(
-            format!("18446744073.709551616").parse::<Uint64_9>(),
-            Err(ParseDecimalError::Overflow(18446744073, 709551616)),
+            "18446744073.709551616".to_string().parse::<Uint64_9>(),
+            Err(ParseDecimalError::Overflow(18_446_744_073, 709_551_616)),
         );
     }
 
@@ -198,16 +198,16 @@ mod tests {
         .assert_debug_eq(&"1.".parse::<Int64_9>());
         assert_eq!("1.0".parse::<Int64_9>(), Ok(Int64_9::ONE));
         assert_eq!("0.1".parse::<Int64_9>(), Ok(Decimal(10i64.pow(8))));
-        assert_eq!("0.123456789".parse::<Int64_9>(), Ok(Decimal(123456789)));
-        assert_eq!("0.012345678".parse::<Int64_9>(), Ok(Decimal(12345678)));
+        assert_eq!("0.123456789".parse::<Int64_9>(), Ok(Decimal(123_456_789)));
+        assert_eq!("0.012345678".parse::<Int64_9>(), Ok(Decimal(12_345_678)));
         assert_eq!("0.000000001".parse::<Int64_9>(), Ok(Decimal(1)));
         assert_eq!("0.0000000001".parse::<Int64_9>(), Err(ParseDecimalError::PrecisionLoss(10)));
         assert_eq!("-1.0".parse::<Int64_9>(), Ok(-Int64_9::ONE));
         assert_eq!("-10.0".parse::<Int64_9>(), Ok(Int64_9::try_from_scaled(-10, 0).unwrap()));
         assert_eq!("-10".parse::<Int64_9>(), Ok(Int64_9::try_from_scaled(-10, 0).unwrap()));
         assert_eq!("-0.1".parse::<Int64_9>(), Ok(-Decimal(10i64.pow(8))));
-        assert_eq!("-0.123456789".parse::<Int64_9>(), Ok(-Decimal(123456789)));
-        assert_eq!("-0.012345678".parse::<Int64_9>(), Ok(-Decimal(12345678)));
+        assert_eq!("-0.123456789".parse::<Int64_9>(), Ok(-Decimal(123_456_789)));
+        assert_eq!("-0.012345678".parse::<Int64_9>(), Ok(-Decimal(12_345_678)));
         assert_eq!("-0.000000001".parse::<Int64_9>(), Ok(-Decimal(1)));
         assert_eq!("-0.0000000001".parse::<Int64_9>(), Err(ParseDecimalError::PrecisionLoss(10)));
     }

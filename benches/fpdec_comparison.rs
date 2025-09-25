@@ -15,68 +15,68 @@ fn criterion_benchmark(c: &mut Criterion) {
     let const_decimal_i64_0 = const_decimal::Decimal::<i64, 4>::try_from_scaled(100, 0).unwrap();
     let const_decimal_i64_1 = const_decimal::Decimal::<i64, 4>::try_from_scaled(110, 0).unwrap();
 
-    c.bench_function(&format!("fpdec_add"), |b| {
+    c.bench_function("fpdec_add", |b| {
         b.iter(|| {
             let _ = black_box(black_box(fpdec_0) + black_box(fpdec_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i32_add"), |b| {
+    c.bench_function("const_decimal_i32_add", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i32_0) + black_box(const_decimal_i32_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i64_add"), |b| {
+    c.bench_function("const_decimal_i64_add", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i64_0) + black_box(const_decimal_i64_1));
-        })
+        });
     });
 
-    c.bench_function(&format!("fpdec_sub"), |b| {
+    c.bench_function("fpdec_sub", |b| {
         b.iter(|| {
             let _ = black_box(black_box(fpdec_0) - black_box(fpdec_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i32_sub"), |b| {
+    c.bench_function("const_decimal_i32_sub", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i32_0) - black_box(const_decimal_i32_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i64_sub"), |b| {
+    c.bench_function("const_decimal_i64_sub", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i64_0) - black_box(const_decimal_i64_1));
-        })
+        });
     });
 
-    c.bench_function(&format!("fpdec_mul"), |b| {
+    c.bench_function("fpdec_mul", |b| {
         b.iter(|| {
             let _ = black_box(black_box(fpdec_0) * black_box(fpdec_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i32_mul"), |b| {
+    c.bench_function("const_decimal_i32_mul", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i32_0) * black_box(const_decimal_i32_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i64_mul"), |b| {
+    c.bench_function("const_decimal_i64_mul", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i64_0) * black_box(const_decimal_i64_1));
-        })
+        });
     });
 
-    c.bench_function(&format!("fpdec_div"), |b| {
+    c.bench_function("fpdec_div", |b| {
         b.iter(|| {
             let _ = black_box(black_box(fpdec_0) / black_box(fpdec_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i32_div"), |b| {
+    c.bench_function("const_decimal_i32_div", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i32_0) / black_box(const_decimal_i32_1));
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i64_div"), |b| {
+    c.bench_function("const_decimal_i64_div", |b| {
         b.iter(|| {
             black_box(black_box(const_decimal_i64_0) / black_box(const_decimal_i64_1));
-        })
+        });
     });
 
     // Some real-world use case examples. Linear futures profit and loss
@@ -97,26 +97,26 @@ fn criterion_benchmark(c: &mut Criterion) {
         const_decimal::Decimal::<i64, 2>::try_from_scaled(110, 0).unwrap();
     let const_decimal_i64_qty = const_decimal::Decimal::<i64, 2>::try_from_scaled(5, 0).unwrap();
 
-    c.bench_function(&format!("fpdec_linear_futures_pnl"), |b| {
+    c.bench_function("fpdec_linear_futures_pnl", |b| {
         b.iter(|| {
             let _ = black_box(fpdec_exit_price * fpdec_qty - fpdec_entry_price * fpdec_qty);
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i32_linear_futures_pnl"), |b| {
+    c.bench_function("const_decimal_i32_linear_futures_pnl", |b| {
         b.iter(|| {
             black_box(
                 const_decimal_i32_exit_price * const_decimal_i32_qty
                     - const_decimal_i32_entry_price * const_decimal_i32_qty,
             );
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i64_linear_futures_pnl"), |b| {
+    c.bench_function("const_decimal_i64_linear_futures_pnl", |b| {
         b.iter(|| {
             black_box(
                 const_decimal_i64_exit_price * const_decimal_i64_qty
                     - const_decimal_i64_entry_price * const_decimal_i64_qty,
             );
-        })
+        });
     });
 
     // Inverse futures profit and loss calculation. Quantity is denoted in
@@ -125,29 +125,29 @@ fn criterion_benchmark(c: &mut Criterion) {
     let const_decimal_i32_qty = const_decimal::Decimal::<i32, 2>::try_from_scaled(500, 0).unwrap();
     let const_decimal_i64_qty = const_decimal::Decimal::<i64, 2>::try_from_scaled(500, 0).unwrap();
 
-    c.bench_function(&format!("fpdec_inverse_futures_pnl"), |b| {
+    c.bench_function("fpdec_inverse_futures_pnl", |b| {
         b.iter(|| {
             let _ = black_box(
                 black_box(fpdec_qty) / black_box(fpdec_entry_price)
                     - black_box(fpdec_qty) / black_box(fpdec_exit_price),
             );
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i32_inverse_futures_pnl"), |b| {
+    c.bench_function("const_decimal_i32_inverse_futures_pnl", |b| {
         b.iter(|| {
             black_box(
                 black_box(const_decimal_i32_qty) / black_box(const_decimal_i32_entry_price)
                     - black_box(const_decimal_i32_qty) / black_box(const_decimal_i32_exit_price),
             );
-        })
+        });
     });
-    c.bench_function(&format!("const_decimal_i64_inverse_futures_pnl"), |b| {
+    c.bench_function("const_decimal_i64_inverse_futures_pnl", |b| {
         b.iter(|| {
             black_box(
                 black_box(const_decimal_i64_qty) / black_box(const_decimal_i64_entry_price)
                     - black_box(const_decimal_i64_qty) / black_box(const_decimal_i64_exit_price),
             );
-        })
+        });
     });
 }
 

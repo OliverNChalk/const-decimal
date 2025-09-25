@@ -33,7 +33,7 @@ fn primitive_div<I>(
     let mut runner = TestRunner::deterministic();
     let input = (strategy.clone(), strategy);
 
-    group.bench_function(&format!("primitive/div/{strategy_label}"), |bencher| {
+    group.bench_function(format!("primitive/div/{strategy_label}"), |bencher| {
         bencher.iter_batched(
             || {
                 let (numer, denom) = input.new_tree(&mut runner).unwrap().current();
@@ -47,7 +47,7 @@ fn primitive_div<I>(
             },
             |(a, b)| black_box(black_box(a) / black_box(b)),
             BatchSize::SmallInput,
-        )
+        );
     });
 }
 
@@ -77,6 +77,6 @@ fn decimal_div<const D: u8, I>(
             },
             |(a, b)| black_box(black_box(a) / black_box(b)),
             BatchSize::SmallInput,
-        )
+        );
     });
 }

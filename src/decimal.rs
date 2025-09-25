@@ -24,11 +24,13 @@ where
     pub const SCALING_FACTOR: I = I::SCALING_FACTOR;
 
     #[deprecated(note = "use Self::MIN")]
+    #[must_use]
     pub const fn min() -> Self {
         Self::MIN
     }
 
     #[deprecated(note = "use Self::MAX")]
+    #[must_use]
     pub const fn max() -> Self {
         Self::MAX
     }
@@ -347,7 +349,8 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _mul_min_by_one>]() {
                     assert_eq!(
-                        Decimal::<$underlying, $decimals>::MIN * Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::MIN
+                            * Decimal::<$underlying, $decimals>::ONE,
                         Decimal::MIN
                     );
                 }
@@ -355,7 +358,8 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _div_min_by_one>]() {
                     assert_eq!(
-                        Decimal::<$underlying, $decimals>::MIN / Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::MIN
+                            / Decimal::<$underlying, $decimals>::ONE,
                         Decimal::MIN
                     );
                 }
@@ -363,7 +367,8 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _mul_max_by_one>]() {
                     assert_eq!(
-                        Decimal::<$underlying, $decimals>::MAX * Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::MAX
+                            * Decimal::<$underlying, $decimals>::ONE,
                         Decimal::MAX,
                     );
                 }
@@ -371,7 +376,8 @@ mod tests {
                 #[test]
                 fn [<$underlying _ $decimals _div_max_by_one>]() {
                     assert_eq!(
-                        Decimal::<$underlying, $decimals>::MAX / Decimal::<$underlying, $decimals>::ONE,
+                        Decimal::<$underlying, $decimals>::MAX
+                            / Decimal::<$underlying, $decimals>::ONE,
                         Decimal::MAX,
                     );
                 }
@@ -623,9 +629,8 @@ mod tests {
         Rational: From<Decimal<I, D>>,
     {
         proptest!(|(a: Decimal<I, D>, b: Decimal<I, D>)| {
-            let out = match std::panic::catch_unwind(|| a + b) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            let Ok(out) = std::panic::catch_unwind(|| a + b) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) + Rational::from(b);
 
@@ -639,9 +644,8 @@ mod tests {
         Rational: From<Decimal<I, D>>,
     {
         proptest!(|(a: Decimal<I, D>, b: Decimal<I, D>)| {
-            let out = match std::panic::catch_unwind(|| a - b) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            let Ok(out) = std::panic::catch_unwind(|| a - b) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) - Rational::from(b);
 
@@ -655,9 +659,8 @@ mod tests {
         Rational: From<Decimal<I, D>>,
     {
         proptest!(|(a: Decimal<I, D>, b: Decimal<I, D>)| {
-            let out = match std::panic::catch_unwind(|| a * b) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            let Ok(out) = std::panic::catch_unwind(|| a * b) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) * Rational::from(b);
 
@@ -683,9 +686,8 @@ mod tests {
                 return Ok(());
             }
 
-            let out = match std::panic::catch_unwind(|| a / b) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            let Ok(out) = std::panic::catch_unwind(|| a / b) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) / Rational::from(b);
 
@@ -707,14 +709,13 @@ mod tests {
         Rational: From<Decimal<I, D>>,
     {
         proptest!(|(a: Decimal<I, D>, b: Decimal<I, D>)| {
-            let out = match std::panic::catch_unwind(|| {
+            let Ok(out) = std::panic::catch_unwind(|| {
                 let mut out = a;
                 out += b;
 
                 out
-            }) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            }) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) + Rational::from(b);
 
@@ -728,14 +729,13 @@ mod tests {
         Rational: From<Decimal<I, D>>,
     {
         proptest!(|(a: Decimal<I, D>, b: Decimal<I, D>)| {
-            let out = match std::panic::catch_unwind(|| {
+            let Ok(out) = std::panic::catch_unwind(|| {
                 let mut out = a;
                 out -= b;
 
                 out
-            }) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            }) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) - Rational::from(b);
 
@@ -749,14 +749,13 @@ mod tests {
         Rational: From<Decimal<I, D>>,
     {
         proptest!(|(a: Decimal<I, D>, b: Decimal<I, D>)| {
-            let out = match std::panic::catch_unwind(|| {
+            let Ok(out) = std::panic::catch_unwind(|| {
                 let mut out = a;
                 out *= b;
 
                 out
-            }) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            }) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) * Rational::from(b);
 
@@ -778,14 +777,13 @@ mod tests {
         Rational: From<Decimal<I, D>>,
     {
         proptest!(|(a: Decimal<I, D>, b: Decimal<I, D>)| {
-            let out = match std::panic::catch_unwind(|| {
+            let Ok(out) = std::panic::catch_unwind(|| {
                 let mut out = a;
                 out /= b;
 
                 out
-            }) {
-                Ok(out) => out,
-                Err(_) => return Ok(()),
+            }) else {
+                return Ok(());
             };
             let reference_out = Rational::from(a) / Rational::from(b);
 
@@ -810,7 +808,7 @@ mod tests {
         proptest!(|(integer: I, decimals_percent in 0..100u64)| {
             let max_decimals: u64 = crate::algorithms::log10(I::max_value()).try_into().unwrap();
             let decimals = u8::try_from(decimals_percent * max_decimals / 100).unwrap();
-            let scaling = I::TEN.pow(decimals as u32);
+            let scaling = I::TEN.pow(u32::from(decimals));
 
             let out = Decimal::try_from_scaled(integer, decimals);
             let reference_out = Rational::from_integers(integer.into(), scaling.into());

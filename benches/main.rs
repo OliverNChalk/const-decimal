@@ -1,4 +1,3 @@
-use std::fmt::Debug;
 use std::ops::{Div, Neg};
 
 use const_decimal::ScaledInteger;
@@ -30,30 +29,30 @@ fn main() {
 
     bench_integers::<9, u64>(
         &mut criterion.benchmark_group("u64_9"),
-        0..(u32::MAX as u64),
+        0..u64::from(u32::MAX),
         // TODO: This upper bound is lower than necessary.
-        ((u32::MAX as u64) - 10u64.pow(9) + 1)..(u64::MAX / 10u64.pow(9)),
+        (u64::from(u32::MAX) - 10u64.pow(9) + 1)..(u64::MAX / 10u64.pow(9)),
         (u64::MAX / 10u64.pow(9) + 1)..u64::MAX,
     );
     bench_integers::<9, i64>(
         &mut criterion.benchmark_group("i64_9"),
-        (i32::MIN as i64)..(i32::MAX as i64),
-        (bool::arbitrary(), ((u32::MAX as i64) + 1)..(i64::MAX / 10i64.pow(9)))
+        i64::from(i32::MIN)..i64::from(i32::MAX),
+        (bool::arbitrary(), (i64::from(u32::MAX) + 1)..(i64::MAX / 10i64.pow(9)))
             .prop_map(|(sign, unsigned)| to_sign::<i64>(sign) * unsigned),
         (bool::arbitrary(), (i64::MAX / 10i64.pow(9) + 1)..i64::MAX)
             .prop_map(|(sign, unsigned)| to_sign::<i64>(sign) * unsigned),
     );
     bench_integers::<18, u128>(
         &mut criterion.benchmark_group("u128_18"),
-        0..(u64::MAX as u128),
+        0..u128::from(u64::MAX),
         // TODO: This upper bound is lower than necessary.
-        ((u64::MAX as u128) - 10u128.pow(18) + 1)..(u128::MAX / 10u128.pow(18)),
+        (u128::from(u64::MAX) - 10u128.pow(18) + 1)..(u128::MAX / 10u128.pow(18)),
         (u128::MAX / 10u128.pow(18) + 1)..u128::MAX,
     );
     bench_integers::<18, i128>(
         &mut criterion.benchmark_group("i128_18"),
-        (i64::MIN as i128)..(i64::MAX as i128),
-        (bool::arbitrary(), ((u64::MAX as i128) + 1)..(i128::MAX / 10i128.pow(18)))
+        i128::from(i64::MIN)..i128::from(i64::MAX),
+        (bool::arbitrary(), (i128::from(u64::MAX) + 1)..(i128::MAX / 10i128.pow(18)))
             .prop_map(|(sign, unsigned)| to_sign::<i128>(sign) * unsigned),
         (bool::arbitrary(), (i128::MAX / 10i128.pow(18) + 1)..i128::MAX)
             .prop_map(|(sign, unsigned)| to_sign::<i128>(sign) * unsigned),
@@ -64,9 +63,9 @@ fn main() {
 
 fn bench_integers<const D: u8, I>(
     group: &mut BenchmarkGroup<'_, WallTime>,
-    lo_range: impl Strategy<Value = I> + Clone + Debug,
-    hi_mul_range: impl Strategy<Value = I> + Clone + Debug,
-    hi_div_range: impl Strategy<Value = I> + Clone + Debug,
+    lo_range: impl Strategy<Value = I> + Clone,
+    hi_mul_range: impl Strategy<Value = I> + Clone,
+    hi_div_range: impl Strategy<Value = I> + Clone,
 ) where
     I: ScaledInteger<D> + Arbitrary + Div<Output = I>,
 {

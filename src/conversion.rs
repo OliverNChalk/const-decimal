@@ -35,6 +35,7 @@ where
     }
 }
 
+#[allow(clippy::float_cmp)]
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;

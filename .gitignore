@@ -1,4 +1,5 @@
-/target
+/.direnv
+/lcov.info
 /logs
 /mutants.out*
-/lcov.info
+/target
