@@ -51,7 +51,7 @@ thiserror = "2"
 [dev-dependencies]
 criterion = "0.8.1"
 expect-test = "1.5.0"
-fpdec = "0.11.0"
+fpdec = "0.13"
 malachite = "0.8"
 proptest = "1.5.0"
 

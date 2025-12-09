@@ -692,9 +692,9 @@ checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 
 [[package]]
 name = "fpdec"
-version = "0.11.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce2c6267fe7a0c52672fe9879c22a4b5a08f11c6c987c43186141d5b0eb9745f"
+checksum = "0a61bd1ced3d7ec7532b37bf1dd66f420f41fac56fcda10382a048578440915a"
 dependencies = [
  "fpdec-core",
  "fpdec-macros",
@@ -702,15 +702,15 @@ dependencies = [
 
 [[package]]
 name = "fpdec-core"
-version = "0.8.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64c81a0af753d9c6e1d5f83f956699e66fe578c8002e233c831facaad1becc9f"
+checksum = "483c1ce71dea1c73fb12063055f27690915ffc9999b24bef71eb710513a4d9f1"
 
 [[package]]
 name = "fpdec-macros"
-version = "0.8.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45cd2d5a6b768a966a951d753151922da390c185fcce1ee5f529dab994d8480c"
+checksum = "118368e06ce22d89cb5323740e9d6908c331d4645c330b0b685a80247ff81cd0"
 dependencies = [
  "fpdec-core",
  "quote",
