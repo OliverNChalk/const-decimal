@@ -1,4 +1,4 @@
-use malachite::num::basic::integers::PrimitiveInt;
+use malachite::base::num::basic::integers::PrimitiveInt;
 use malachite::Rational;
 
 use crate::{Decimal, ScaledInteger};

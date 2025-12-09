@@ -41,18 +41,18 @@ malachite = ["dep:malachite"]
 
 [dependencies]
 borsh = { version = "1.5.1", features = ["derive"], optional = true }
-malachite = { version = "0.4.16", optional = true }
+malachite = { version = "0.8", optional = true }
 num-traits = "0.2.19"
 paste = "1.0.15"
 ruint = "1.12.3"
 serde = { version = "~1.0", features = ["derive"], optional = true }
-thiserror = "1.0.63"
+thiserror = "2"
 
 [dev-dependencies]
 criterion = "0.8.1"
 expect-test = "1.5.0"
 fpdec = "0.11.0"
-malachite = "0.4.16"
+malachite = "0.8"
 proptest = "1.5.0"
 
 [profile.release]

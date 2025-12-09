@@ -287,7 +287,7 @@ mod tests {
     use std::fmt::Debug;
     use std::ops::Shr;
 
-    use malachite::num::basic::traits::Zero;
+    use malachite::base::num::basic::traits::Zero;
     use malachite::{Integer, Rational};
     use paste::paste;
     use proptest::prelude::*;
