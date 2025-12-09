@@ -1,6 +1,8 @@
 //! Compare `const-decimal` with [`fpdec.rs`](https://github.com/mamrhein/fpdec.rs)
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use std::hint::black_box;
+
+use criterion::{criterion_group, criterion_main, Criterion};
 use fpdec::{Dec, Decimal};
 
 // Lots of black boxes, maybe overkill.

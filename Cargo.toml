@@ -49,7 +49,7 @@ serde = { version = "~1.0", features = ["derive"], optional = true }
 thiserror = "1.0.63"
 
 [dev-dependencies]
-criterion = "0.5.1"
+criterion = "0.8.1"
 expect-test = "1.5.0"
 fpdec = "0.11.0"
 malachite = "0.4.16"

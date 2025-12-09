@@ -1,6 +1,8 @@
+use std::hint::black_box;
+
 use const_decimal::{Decimal, ScaledInteger};
 use criterion::measurement::WallTime;
-use criterion::{black_box, BatchSize, BenchmarkGroup};
+use criterion::{BatchSize, BenchmarkGroup};
 use num_traits::PrimInt;
 use prop::strategy::ValueTree;
 use prop::test_runner::TestRunner;
