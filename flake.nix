@@ -54,19 +54,19 @@
           buildInputs = with pkgs; [
             rustPlatform.bindgenHook
             rustToolchain
-            rust-bin.nightly.latest.rustfmt # Use nightly formatter which has some better features.
+            rust-bin.nightly.latest.rustfmt
             cargo-nextest
             cargo-upgrades
-            taplo # Toml toolkit for formatting `Cargo.toml`.
+            taplo
           ];
-          nix_tools = with pkgs; [
-            alejandra # Formatter for nix code. `alejandra .`
+          nixTools = with pkgs; [
+            nixfmt
             deadnix
             statix
           ];
         in
         pkgs.mkShell {
-          buildInputs = buildInputs ++ nix_tools;
+          buildInputs = buildInputs ++ nixTools;
         };
     in
     {
