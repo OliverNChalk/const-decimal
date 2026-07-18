@@ -227,15 +227,12 @@ where
     #[inline]
     #[track_caller]
     fn div(self, rhs: Self) -> Self::Output {
-        assert!(
-            rhs.0 != I::ZERO,
-            "`Decimal` division by zero; lhs={self}"
-        );
+        assert!(rhs.0 != I::ZERO, "`Decimal` division by zero; lhs={self}");
         match I::try_full_mul_div(self.0, I::SCALING_FACTOR, rhs.0) {
             Some(out) => Decimal(out),
             None => panic!(
-                "`Decimal` div out of range; lhs={self}; rhs={rhs}; dividing by a value \
-                 close to zero overflows"
+                "`Decimal` div out of range; lhs={self}; rhs={rhs}; dividing by a value close to \
+                 zero overflows"
             ),
         }
     }

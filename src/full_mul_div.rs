@@ -29,8 +29,8 @@ macro_rules! impl_primitive {
                 match self.try_full_mul_div(rhs, div) {
                     Some(out) => out,
                     None => panic!(
-                        "Result out of range; ({self} * {rhs}) / {div} does not fit the \
-                         backing integer type"
+                        "Result out of range; ({self} * {rhs}) / {div} does not fit the backing \
+                         integer type"
                     ),
                 }
             }
@@ -69,8 +69,8 @@ impl FullMulDiv for u128 {
         match self.try_full_mul_div(rhs, div) {
             Some(out) => out,
             None => panic!(
-                "Result out of range; ({self} * {rhs}) / {div} does not fit the backing \
-                 integer type"
+                "Result out of range; ({self} * {rhs}) / {div} does not fit the backing integer \
+                 type"
             ),
         }
     }
@@ -95,8 +95,8 @@ impl FullMulDiv for i128 {
         match self.try_full_mul_div(rhs, div) {
             Some(out) => out,
             None => panic!(
-                "Result out of range; ({self} * {rhs}) / {div} does not fit the backing \
-                 integer type"
+                "Result out of range; ({self} * {rhs}) / {div} does not fit the backing integer \
+                 type"
             ),
         }
     }
