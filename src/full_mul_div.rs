@@ -1,5 +1,5 @@
-use ruint::aliases::U256;
 use ruint::Uint;
+use ruint::aliases::U256;
 
 pub trait FullMulDiv {
     /// Implements `a * b / c` with full width on the intermediate `a * b`

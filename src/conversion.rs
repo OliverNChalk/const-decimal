@@ -1,4 +1,4 @@
-use crate::{Decimal, Int128_18, Int64_9, ScaledInteger, Uint128_18, Uint64_9};
+use crate::{Decimal, Int64_9, Int128_18, ScaledInteger, Uint64_9, Uint128_18};
 
 // TODO: Implement From generically where the result cannot overflow.
 // TODO: Implement TryFrom generically where the result can overflow.

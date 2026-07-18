@@ -1,7 +1,7 @@
 # Const Decimal
 
 `const-decimal` is a fixed precision decimal backed by an underlying integer.
-This means it can compute Add/Sub/Mul/Div* operations within it's range without
+This means it can compute Add/Sub/Mul/Div\* operations within it's range without
 precision loss. This crate was created as there was no pre-existing crate that
 offered these features for decimal numbers (`fixed` cannot represent decimals
 with precision).

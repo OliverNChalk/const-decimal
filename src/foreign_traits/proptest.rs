@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use proptest::arbitrary::Mapped;
-use proptest::prelude::{any, Arbitrary, Strategy};
+use proptest::prelude::{Arbitrary, Strategy, any};
 
 use crate::{Decimal, ScaledInteger};
 
