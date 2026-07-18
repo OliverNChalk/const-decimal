@@ -177,8 +177,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn add(self, rhs: Self) -> Self::Output {
-        Decimal(self.0.checked_add(&rhs.0).unwrap())
+        match self.0.checked_add(&rhs.0) {
+            Some(out) => Decimal(out),
+            None => panic!("`Decimal` add overflowed; lhs={self}; rhs={rhs}"),
+        }
     }
 }
 
@@ -189,8 +193,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn sub(self, rhs: Self) -> Self::Output {
-        Decimal(self.0.checked_sub(&rhs.0).unwrap())
+        match self.0.checked_sub(&rhs.0) {
+            Some(out) => Decimal(out),
+            None => panic!("`Decimal` sub overflowed; lhs={self}; rhs={rhs}"),
+        }
     }
 }
 
@@ -201,8 +209,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn mul(self, rhs: Self) -> Self::Output {
-        Decimal(I::full_mul_div(self.0, rhs.0, I::SCALING_FACTOR))
+        match I::try_full_mul_div(self.0, rhs.0, I::SCALING_FACTOR) {
+            Some(out) => Decimal(out),
+            None => panic!("`Decimal` mul out of range; lhs={self}; rhs={rhs}"),
+        }
     }
 }
 
@@ -213,8 +225,19 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn div(self, rhs: Self) -> Self::Output {
-        Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0))
+        assert!(
+            rhs.0 != I::ZERO,
+            "`Decimal` division by zero; lhs={self}"
+        );
+        match I::try_full_mul_div(self.0, I::SCALING_FACTOR, rhs.0) {
+            Some(out) => Decimal(out),
+            None => panic!(
+                "`Decimal` div out of range; lhs={self}; rhs={rhs}; dividing by a value \
+                 close to zero overflows"
+            ),
+        }
     }
 }
 
@@ -225,8 +248,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn rem(self, rhs: Self) -> Self::Output {
-        Self(self.0.checked_rem(&rhs.0).unwrap())
+        match self.0.checked_rem(&rhs.0) {
+            Some(out) => Self(out),
+            None => panic!("`Decimal` rem failed; lhs={self}; rhs={rhs}"),
+        }
     }
 }
 
@@ -237,8 +264,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn neg(self) -> Self::Output {
-        Decimal(self.0.checked_neg().unwrap())
+        match self.0.checked_neg() {
+            Some(out) => Decimal(out),
+            None => panic!("`Decimal` neg overflowed; value={self}"),
+        }
     }
 }
 
@@ -247,8 +278,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn add_assign(&mut self, rhs: Self) {
-        *self = Decimal(self.0.checked_add(&rhs.0).unwrap());
+        *self = *self + rhs;
     }
 }
 
@@ -257,8 +289,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn sub_assign(&mut self, rhs: Self) {
-        *self = Decimal(self.0.checked_sub(&rhs.0).unwrap());
+        *self = *self - rhs;
     }
 }
 
@@ -267,8 +300,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn mul_assign(&mut self, rhs: Self) {
-        *self = Decimal(I::full_mul_div(self.0, rhs.0, I::SCALING_FACTOR));
+        *self = *self * rhs;
     }
 }
 
@@ -277,8 +311,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn div_assign(&mut self, rhs: Self) {
-        *self = Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0));
+        *self = *self / rhs;
     }
 }
 
