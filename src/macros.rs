@@ -39,4 +39,6 @@ macro_rules! generate_test {
     };
 }
 
-pub(crate) use {apply_to_common_variants, generate_test, generate_tests_for_common_variants};
+pub(crate) use apply_to_common_variants;
+pub(crate) use generate_test;
+pub(crate) use generate_tests_for_common_variants;

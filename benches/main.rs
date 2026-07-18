@@ -1,8 +1,8 @@
 use std::ops::{Div, Neg};
 
 use const_decimal::ScaledInteger;
-use criterion::measurement::WallTime;
 use criterion::BenchmarkGroup;
+use criterion::measurement::WallTime;
 use num_traits::ConstOne;
 use proptest::prelude::{Arbitrary, Strategy};
 
