@@ -1,5 +1,27 @@
+use std::fmt::Display;
+
 use ruint::Uint;
 use ruint::aliases::U256;
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn out_of_range<I>(this: I, rhs: I, div: I) -> !
+where
+    I: Display,
+{
+    panic!("Result out of range; ({this} * {rhs}) / {div} does not fit the backing integer type")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn division_by_zero<I>(lhs: I, rhs: I) -> !
+where
+    I: Display,
+{
+    panic!("Division by zero; lhs={lhs}; rhs={rhs}")
+}
 
 pub trait FullMulDiv: Sized {
     /// Implements `a * b / c` with full width on the intermediate `a * b`
@@ -24,20 +46,21 @@ pub trait FullMulDiv: Sized {
 macro_rules! impl_primitive {
     ($primary:ty, $intermediate:ty) => {
         impl FullMulDiv for $primary {
+            #[inline]
             #[track_caller]
             fn full_mul_div(self, rhs: Self, div: Self) -> Self {
                 match self.try_full_mul_div(rhs, div) {
                     Some(out) => out,
-                    None => panic!(
-                        "Result out of range; ({self} * {rhs}) / {div} does not fit the backing \
-                         integer type"
-                    ),
+                    None => out_of_range(self, rhs, div),
                 }
             }
 
+            #[inline]
             #[track_caller]
             fn try_full_mul_div(self, rhs: Self, div: Self) -> Option<Self> {
-                assert!(div != 0, "Division by zero; lhs={self}; rhs={rhs}");
+                if div == 0 {
+                    division_by_zero(self, rhs);
+                }
 
                 // The intermediate type has twice the width of the primary
                 // type, so neither the product nor the division can overflow.
@@ -64,20 +87,21 @@ impl_primitive!(u64, u128);
 impl_primitive!(i64, i128);
 
 impl FullMulDiv for u128 {
+    #[inline]
     #[track_caller]
     fn full_mul_div(self, rhs: Self, div: Self) -> Self {
         match self.try_full_mul_div(rhs, div) {
             Some(out) => out,
-            None => panic!(
-                "Result out of range; ({self} * {rhs}) / {div} does not fit the backing integer \
-                 type"
-            ),
+            None => out_of_range(self, rhs, div),
         }
     }
 
+    #[inline]
     #[track_caller]
     fn try_full_mul_div(self, rhs: Self, div: Self) -> Option<Self> {
-        assert!(div != 0, "Division by zero; lhs={self}; rhs={rhs}");
+        if div == 0 {
+            division_by_zero(self, rhs);
+        }
 
         let out: U256 = Uint::from(self)
             .checked_mul(Uint::from(rhs))
@@ -90,20 +114,21 @@ impl FullMulDiv for u128 {
 }
 
 impl FullMulDiv for i128 {
+    #[inline]
     #[track_caller]
     fn full_mul_div(self, rhs: Self, div: Self) -> Self {
         match self.try_full_mul_div(rhs, div) {
             Some(out) => out,
-            None => panic!(
-                "Result out of range; ({self} * {rhs}) / {div} does not fit the backing integer \
-                 type"
-            ),
+            None => out_of_range(self, rhs, div),
         }
     }
 
+    #[inline]
     #[track_caller]
     fn try_full_mul_div(self, rhs: Self, div: Self) -> Option<Self> {
-        assert!(div != 0, "Division by zero; lhs={self}; rhs={rhs}");
+        if div == 0 {
+            division_by_zero(self, rhs);
+        }
 
         // If we can compute the output using only an i128, then we should.
         // NB: `checked_div` also fails on `i128::MIN / -1`, which falls
