@@ -11,6 +11,76 @@ use crate::integer::{ScaledInteger, SignedScaledInteger};
 #[repr(transparent)]
 pub struct Decimal<I, const D: u8>(pub I);
 
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn add_overflow<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
+where
+    I: ScaledInteger<D>,
+{
+    panic!("`Decimal` add overflowed; lhs={lhs}; rhs={rhs}")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn sub_overflow<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
+where
+    I: ScaledInteger<D>,
+{
+    panic!("`Decimal` sub overflowed; lhs={lhs}; rhs={rhs}")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn mul_out_of_range<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
+where
+    I: ScaledInteger<D>,
+{
+    panic!("`Decimal` mul out of range; lhs={lhs}; rhs={rhs}")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn division_by_zero<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
+where
+    I: ScaledInteger<D>,
+{
+    panic!("`Decimal` division by zero; lhs={lhs}; rhs={rhs}")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn div_out_of_range<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
+where
+    I: ScaledInteger<D>,
+{
+    panic!("`Decimal` div out of range; lhs={lhs}; rhs={rhs}")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn rem_failed<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
+where
+    I: ScaledInteger<D>,
+{
+    panic!("`Decimal` rem failed; lhs={lhs}; rhs={rhs}")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn neg_overflow<I, const D: u8>(value: Decimal<I, D>) -> !
+where
+    I: SignedScaledInteger<D>,
+{
+    panic!("`Decimal` neg overflowed; value={value}")
+}
+
 impl<I, const D: u8> Decimal<I, D>
 where
     I: ScaledInteger<D>,
@@ -177,8 +247,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn add(self, rhs: Self) -> Self::Output {
-        Decimal(self.0.checked_add(&rhs.0).unwrap())
+        match self.0.checked_add(&rhs.0) {
+            Some(out) => Decimal(out),
+            None => add_overflow(self, rhs),
+        }
     }
 }
 
@@ -189,8 +263,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn sub(self, rhs: Self) -> Self::Output {
-        Decimal(self.0.checked_sub(&rhs.0).unwrap())
+        match self.0.checked_sub(&rhs.0) {
+            Some(out) => Decimal(out),
+            None => sub_overflow(self, rhs),
+        }
     }
 }
 
@@ -201,8 +279,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn mul(self, rhs: Self) -> Self::Output {
-        Decimal(I::full_mul_div(self.0, rhs.0, I::SCALING_FACTOR))
+        match I::try_full_mul_div(self.0, rhs.0, I::SCALING_FACTOR) {
+            Some(out) => Decimal(out),
+            None => mul_out_of_range(self, rhs),
+        }
     }
 }
 
@@ -213,8 +295,16 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn div(self, rhs: Self) -> Self::Output {
-        Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0))
+        if rhs.0 == I::ZERO {
+            division_by_zero(self, rhs);
+        }
+
+        match I::try_full_mul_div(self.0, I::SCALING_FACTOR, rhs.0) {
+            Some(out) => Decimal(out),
+            None => div_out_of_range(self, rhs),
+        }
     }
 }
 
@@ -225,8 +315,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn rem(self, rhs: Self) -> Self::Output {
-        Self(self.0.checked_rem(&rhs.0).unwrap())
+        match self.0.checked_rem(&rhs.0) {
+            Some(out) => Self(out),
+            None => rem_failed(self, rhs),
+        }
     }
 }
 
@@ -237,8 +331,12 @@ where
     type Output = Self;
 
     #[inline]
+    #[track_caller]
     fn neg(self) -> Self::Output {
-        Decimal(self.0.checked_neg().unwrap())
+        match self.0.checked_neg() {
+            Some(out) => Decimal(out),
+            None => neg_overflow(self),
+        }
     }
 }
 
@@ -247,8 +345,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn add_assign(&mut self, rhs: Self) {
-        *self = Decimal(self.0.checked_add(&rhs.0).unwrap());
+        *self = *self + rhs;
     }
 }
 
@@ -257,8 +356,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn sub_assign(&mut self, rhs: Self) {
-        *self = Decimal(self.0.checked_sub(&rhs.0).unwrap());
+        *self = *self - rhs;
     }
 }
 
@@ -267,8 +367,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn mul_assign(&mut self, rhs: Self) {
-        *self = Decimal(I::full_mul_div(self.0, rhs.0, I::SCALING_FACTOR));
+        *self = *self * rhs;
     }
 }
 
@@ -277,8 +378,9 @@ where
     I: ScaledInteger<D>,
 {
     #[inline]
+    #[track_caller]
     fn div_assign(&mut self, rhs: Self) {
-        *self = Decimal(I::full_mul_div(self.0, I::SCALING_FACTOR, rhs.0));
+        *self = *self / rhs;
     }
 }
 
@@ -293,6 +395,18 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
+
+    #[test]
+    #[should_panic(expected = "`Decimal` division by zero; lhs=1.0; rhs=0.0")]
+    fn division_by_zero_message_contains_both_operands() {
+        let _ = Decimal::<i8, 1>::ONE / Decimal::ZERO;
+    }
+
+    #[test]
+    #[should_panic(expected = "`Decimal` div out of range; lhs=12.7; rhs=0.1")]
+    fn division_out_of_range_message_is_cause_neutral() {
+        let _ = Decimal::<i8, 1>::MAX / Decimal(1);
+    }
 
     macro_rules! test_basic_ops {
         ($underlying:ty, $decimals:literal) => {
