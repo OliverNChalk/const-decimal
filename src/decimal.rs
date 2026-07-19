@@ -44,11 +44,11 @@ where
 #[cold]
 #[inline(never)]
 #[track_caller]
-fn division_by_zero<I, const D: u8>(lhs: Decimal<I, D>) -> !
+fn division_by_zero<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
 where
     I: ScaledInteger<D>,
 {
-    panic!("`Decimal` division by zero; lhs={lhs}")
+    panic!("`Decimal` division by zero; lhs={lhs}; rhs={rhs}")
 }
 
 #[cold]
@@ -58,10 +58,7 @@ fn div_out_of_range<I, const D: u8>(lhs: Decimal<I, D>, rhs: Decimal<I, D>) -> !
 where
     I: ScaledInteger<D>,
 {
-    panic!(
-        "`Decimal` div out of range; lhs={lhs}; rhs={rhs}; dividing by a value close to zero \
-         overflows"
-    )
+    panic!("`Decimal` div out of range; lhs={lhs}; rhs={rhs}")
 }
 
 #[cold]
@@ -301,7 +298,7 @@ where
     #[track_caller]
     fn div(self, rhs: Self) -> Self::Output {
         if rhs.0 == I::ZERO {
-            division_by_zero(self);
+            division_by_zero(self, rhs);
         }
 
         match I::try_full_mul_div(self.0, I::SCALING_FACTOR, rhs.0) {
@@ -398,6 +395,18 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
+
+    #[test]
+    #[should_panic(expected = "`Decimal` division by zero; lhs=1.0; rhs=0.0")]
+    fn division_by_zero_message_contains_both_operands() {
+        let _ = Decimal::<i8, 1>::ONE / Decimal::ZERO;
+    }
+
+    #[test]
+    #[should_panic(expected = "`Decimal` div out of range; lhs=12.7; rhs=0.1")]
+    fn division_out_of_range_message_is_cause_neutral() {
+        let _ = Decimal::<i8, 1>::MAX / Decimal(1);
+    }
 
     macro_rules! test_basic_ops {
         ($underlying:ty, $decimals:literal) => {

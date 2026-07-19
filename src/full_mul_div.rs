@@ -16,11 +16,11 @@ where
 #[cold]
 #[inline(never)]
 #[track_caller]
-fn division_by_zero<I>(lhs: I, rhs: I) -> !
+fn division_by_zero<I>(lhs: I, rhs: I, div: I) -> !
 where
     I: Display,
 {
-    panic!("Division by zero; lhs={lhs}; rhs={rhs}")
+    panic!("Division by zero; lhs={lhs}; rhs={rhs}; div={div}")
 }
 
 pub trait FullMulDiv: Sized {
@@ -34,11 +34,8 @@ pub trait FullMulDiv: Sized {
     fn full_mul_div(self, rhs: Self, div: Self) -> Self;
 
     /// Implements `a * b / c` with full width on the intermediate `a * b`
-    /// state, returning `None` when the result does not fit `Self`.
-    ///
-    /// # Panics
-    ///
-    /// Panics when `div` is zero.
+    /// state, returning `None` when `div` is zero or the result does not fit
+    /// `Self`.
     #[track_caller]
     fn try_full_mul_div(self, rhs: Self, div: Self) -> Option<Self>;
 }
@@ -49,6 +46,10 @@ macro_rules! impl_primitive {
             #[inline]
             #[track_caller]
             fn full_mul_div(self, rhs: Self, div: Self) -> Self {
+                if div == 0 {
+                    division_by_zero(self, rhs, div);
+                }
+
                 match self.try_full_mul_div(rhs, div) {
                     Some(out) => out,
                     None => out_of_range(self, rhs, div),
@@ -59,7 +60,7 @@ macro_rules! impl_primitive {
             #[track_caller]
             fn try_full_mul_div(self, rhs: Self, div: Self) -> Option<Self> {
                 if div == 0 {
-                    division_by_zero(self, rhs);
+                    return None;
                 }
 
                 // The intermediate type has twice the width of the primary
@@ -90,6 +91,10 @@ impl FullMulDiv for u128 {
     #[inline]
     #[track_caller]
     fn full_mul_div(self, rhs: Self, div: Self) -> Self {
+        if div == 0 {
+            division_by_zero(self, rhs, div);
+        }
+
         match self.try_full_mul_div(rhs, div) {
             Some(out) => out,
             None => out_of_range(self, rhs, div),
@@ -100,7 +105,7 @@ impl FullMulDiv for u128 {
     #[track_caller]
     fn try_full_mul_div(self, rhs: Self, div: Self) -> Option<Self> {
         if div == 0 {
-            division_by_zero(self, rhs);
+            return None;
         }
 
         let out: U256 = Uint::from(self)
@@ -117,6 +122,10 @@ impl FullMulDiv for i128 {
     #[inline]
     #[track_caller]
     fn full_mul_div(self, rhs: Self, div: Self) -> Self {
+        if div == 0 {
+            division_by_zero(self, rhs, div);
+        }
+
         match self.try_full_mul_div(rhs, div) {
             Some(out) => out,
             None => out_of_range(self, rhs, div),
@@ -127,7 +136,7 @@ impl FullMulDiv for i128 {
     #[track_caller]
     fn try_full_mul_div(self, rhs: Self, div: Self) -> Option<Self> {
         if div == 0 {
-            division_by_zero(self, rhs);
+            return None;
         }
 
         // If we can compute the output using only an i128, then we should.
@@ -237,6 +246,13 @@ mod tests {
         });
     }
 
+    #[test]
+    fn try_full_mul_div_returns_none_for_zero_divisor() {
+        assert_eq!(i64::try_full_mul_div(1, 2, 0), None);
+        assert_eq!(u128::try_full_mul_div(1, 2, 0), None);
+        assert_eq!(i128::try_full_mul_div(1, 2, 0), None);
+    }
+
     /// Regression: a negative result with magnitude in `(2^127, 2^128)`
     /// previously wrapped through two's complement to a silently wrong value.
     #[test]
@@ -260,7 +276,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Division by zero; lhs=1; rhs=2")]
+    #[should_panic(expected = "Division by zero; lhs=1; rhs=2; div=0")]
     fn i64_full_mul_div_division_by_zero_message_contains_operands() {
         i64::full_mul_div(1, 2, 0);
     }
