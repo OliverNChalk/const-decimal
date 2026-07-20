@@ -4,10 +4,17 @@ All notable changes to `const-decimal`.
 
 ## Unreleased
 
+- Update to Rust edition 2024 (requires Rust 1.85+).
 - Add `fpdec_comparison` benchmark.
 - Parse strings without a decimal point.
 - Add `quantize_round_to_zero`.
 - Impl `num_traits::Zero`, `num_traits::One`, and `std::ops::Rem`.
+- Impl `num_traits::Num` and `num_traits::Signed`.
+- Add `Decimal::to_f32(&self)`.
+- Add `Decimal::MIN` and `Decimal::MAX`, deprecating `Decimal::min()` and
+  `Decimal::max()`.
+- Improve panic messages in arithmetic operations.
+- Correctly format `Decimal::MIN`, e.g. `Decimal::<i8, 1>::MIN` as `-12.8`.
 
 ## 0.3.0
 
