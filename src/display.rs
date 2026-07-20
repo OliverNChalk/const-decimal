@@ -12,18 +12,25 @@ where
     I: ScaledInteger<D>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let (sign, unsigned) = match self.0 < I::ZERO {
-            // NB: Integers do not implement negation, so lets use two's complement to flip the sign
-            // of the signed integer (modelled as an unsigned integer).
-            true => ("-", (!self.0).wrapping_add(&I::ONE)),
-            false => ("", self.0),
+        // `SCALING_FACTOR` cannot be zero.
+        #[allow(clippy::arithmetic_side_effects)]
+        let integer = self.0 / I::SCALING_FACTOR;
+        // `SCALING_FACTOR` cannot be zero.
+        #[allow(clippy::arithmetic_side_effects)]
+        let fractional = self.0 % I::SCALING_FACTOR;
+
+        let is_negative = self.0 < I::ZERO;
+        // The quotient carries the sign unless it is zero.
+        let sign = match is_negative && integer == I::ZERO {
+            true => "-",
+            false => "",
         };
-        // `SCALING_FACTOR` cannot be zero.
-        #[allow(clippy::arithmetic_side_effects)]
-        let integer = unsigned / I::SCALING_FACTOR;
-        // `SCALING_FACTOR` cannot be zero.
-        #[allow(clippy::arithmetic_side_effects)]
-        let fractional = unsigned % I::SCALING_FACTOR;
+        // Only negate the remainder, whose magnitude is less than the positive scaling
+        // factor and therefore always representable.
+        let fractional = match is_negative {
+            true => (!fractional).wrapping_add(&I::ONE),
+            false => fractional,
+        };
 
         write!(f, "{sign}{integer}.{fractional:0>decimals$}", decimals = D as usize)
     }
@@ -181,6 +188,11 @@ mod tests {
             (-Int64_9::ONE + -Int64_9::try_from_scaled(123, 9).unwrap()).to_string(),
             "-1.000000123"
         );
+    }
+
+    #[test]
+    fn signed_min_to_string() {
+        assert_eq!(Decimal::<i8, 1>::MIN.to_string(), "-12.8");
     }
 
     #[test]
