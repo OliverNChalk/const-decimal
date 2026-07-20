@@ -4,6 +4,8 @@ All notable changes to `const-decimal`.
 
 ## Unreleased
 
+## 0.4.0
+
 - Update to Rust edition 2024 (requires Rust 1.85+).
 - Add `fpdec_comparison` benchmark.
 - Parse strings without a decimal point.
